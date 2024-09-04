@@ -7,9 +7,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Build;
-import android.os.Handler;
 import android.text.Editable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -18,8 +16,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+
+
 @SuppressLint("AppCompatCustomView")
-public class PinEntryEditText extends EditText {
+public class PinEntryEditText2 extends EditText {
     public static final String XML_NAMESPACE_ANDROID = "http://schemas.android.com/apk/res/android";
 
     private float mSpace = 24; //24 dp by default, space between the lines
@@ -33,7 +33,6 @@ public class PinEntryEditText extends EditText {
     private float mLineStroke = 1; //1dp by default
     private float mLineStrokeSelected = 2; //2dp by default
     private Paint mLinesPaint;
-    private Paint mCursorPaint;
     int[][] mStates = new int[][]{
             new int[]{android.R.attr.state_selected}, // selected
             new int[]{android.R.attr.state_focused}, // focused
@@ -48,34 +47,22 @@ public class PinEntryEditText extends EditText {
 
     ColorStateList mColorStates = new ColorStateList(mStates, mColors);
 
-    private int mCurrentIndex = 0; // The index of the current character being edited
-    private boolean mShowCursor = false; // Whether to show the cursor or not
-    private final Handler mHandler = new Handler();
-    private final Runnable mCursorBlinkRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mShowCursor = !mShowCursor;
-            invalidate();
-            mHandler.postDelayed(this, 500); // Blink every 500 ms
-        }
-    };
-
-    public PinEntryEditText(Context context) {
+    public PinEntryEditText2(Context context) {
         super(context);
     }
 
-    public PinEntryEditText(Context context, AttributeSet attrs) {
+    public PinEntryEditText2(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public PinEntryEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PinEntryEditText2(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public PinEntryEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public PinEntryEditText2(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs);
     }
@@ -88,15 +75,9 @@ public class PinEntryEditText extends EditText {
         mLinesPaint = new Paint(getPaint());
         mLinesPaint.setStrokeWidth(mLineStroke);
 
-        mCursorPaint = new Paint();
-        mCursorPaint.setColor(Color.BLACK); // Color for the cursor line
-        mCursorPaint.setStrokeWidth(2); // Width of the cursor line
-
-
-
         // Khởi tạo Paint cho dấu chấm tròn
         mCirclePaint = new Paint(getPaint());
-        mCirclePaint.setColor(Color.parseColor("#E5E5E5")); // Đặt màu cho dấu chấm tròn, bạn có thể thay đổi màu sắc
+        mCirclePaint.setColor(Color.parseColor("#E5E5E5"));
 
 
         if (!isInEditMode()) {
@@ -149,8 +130,7 @@ public class PinEntryEditText extends EditText {
                 }
             }
         });
-//        // Start cursor blinking animation
-//        mHandler.post(mCursorBlinkRunnable);
+
     }
 
     @Override
@@ -167,7 +147,7 @@ public class PinEntryEditText extends EditText {
     protected void onDraw(Canvas canvas) {
         int availableWidth = getWidth() - getPaddingRight() - getPaddingLeft();
 
-        // Đặt khoảng cách giữa các ô
+        // Đặt khoảng cách giữa các dấu gạch dưới là 8px
         mSpace = 8 * getResources().getDisplayMetrics().density;
 
         if (mSpace < 0) {
@@ -177,8 +157,7 @@ public class PinEntryEditText extends EditText {
         }
 
         int startX = getPaddingLeft();
-        int top = getPaddingTop(); // Thay đổi từ bottom thành top
-        int bottom = getHeight() - getPaddingBottom(); // Đặt bottom để khớp với chiều cao của view
+        int bottom = getHeight() - getPaddingBottom();
 
         // Text Width
         Editable text = getText();
@@ -188,33 +167,16 @@ public class PinEntryEditText extends EditText {
 
         for (int i = 0; i < mNumChars; i++) {
             updateColorForLines(i == textLength);
+            canvas.drawLine(startX, bottom, startX + mCharSize, bottom, mLinesPaint);
 
-            // Vẽ hình chữ nhật bo tròn với chỉ viền
-            float rectLeft = startX;
-            float rectRight = startX + mCharSize;
-            float rectTop = top; // Đặt rectTop bằng với top của view
-            float rectBottom = rectTop + mCharSize; // Đặt rectBottom để ô có chiều cao bằng mCharSize
-
-            // Bo tròn 4 góc
-            float cornerRadius = 8 * getResources().getDisplayMetrics().density;
-
-            // Thiết lập để chỉ vẽ viền, không có nền
-            mLinesPaint.setStyle(Paint.Style.STROKE);
-
-            canvas.drawRoundRect(rectLeft, rectTop, rectRight, rectBottom, cornerRadius, cornerRadius, mLinesPaint);
-
-            // Custom ký tự nhập vào
+            // custom ký tự nhập vào
             if (getText().length() > i) {
                 float middle = startX + mCharSize / 2;
-                canvas.drawText(text, i, i + 1, middle - textWidths[0] / 2, rectTop + mCharSize - (mLineSpacing * 2), getPaint());
-            }
-
-            // Draw cursor line if this is the current index
-            if (i == mCurrentIndex && mShowCursor) {
-                float cursorX = startX + mCharSize / 2;
-                float cursorTop = rectTop + 20; // Adjust cursor position
-                float cursorBottom = rectBottom - 20;
-                canvas.drawLine(cursorX, cursorTop, cursorX, cursorBottom, mCursorPaint);
+                canvas.drawText(text, i, i + 1, middle - textWidths[0] / 2, bottom - (mLineSpacing * 2), getPaint());
+            } else {
+                float middle = startX + mCharSize / 2;
+                float circleRadius = 20; // Bán kính của dấu chấm tròn
+                canvas.drawCircle(middle, bottom - (mLineSpacing * 3), circleRadius, mCirclePaint);
             }
 
             // Di chuyển startX để vẽ ký tự tiếp theo
@@ -225,9 +187,6 @@ public class PinEntryEditText extends EditText {
             }
         }
     }
-
-
-
 
 
     private int getColorForState(int... states) {
@@ -248,36 +207,5 @@ public class PinEntryEditText extends EditText {
             mLinesPaint.setStrokeWidth(mLineStroke);
             mLinesPaint.setColor(getColorForState(-android.R.attr.state_focused));
         }
-    }
-    @Override
-    protected void onTextChanged(CharSequence text, int start, int before, int after) {
-        super.onTextChanged(text, start, before, after);
-        mCurrentIndex = text.length(); // Update the current index
-        invalidate(); // Redraw the view
-    }
-    @Override
-    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-        super.onFocusChanged(focused, direction, previouslyFocusedRect);
-        if(focused) {
-            mCurrentIndex = getText().length(); // Update the current index
-            invalidate(); // Redraw the view
-            // Start cursor blinking animation
-            mHandler.post(mCursorBlinkRunnable);
-        }else {
-            mShowCursor = false; // Hide the cursor when losing focus
-            mHandler.removeCallbacks(mCursorBlinkRunnable); // Stop blinking
-        }
-
-    }
-
-    public void removeCr() {
-        mShowCursor = false; // Hide the cursor when losing focus
-        mHandler.removeCallbacks(mCursorBlinkRunnable); // Stop blinking
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mHandler.removeCallbacks(mCursorBlinkRunnable); // Stop blinking when detached
     }
 }

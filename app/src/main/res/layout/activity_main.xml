@@ -10,8 +10,9 @@
     <com.example.myapplication.PinEntryEditText
         android:id="@+id/txt_pin_entry"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:cursorVisible="false"
+        android:layout_marginHorizontal="20dp"
         android:digits="1234567890"
         android:inputType="number"
         android:maxLength="6"
@@ -23,4 +24,16 @@
         android:layout_height="wrap_content"
         android:text="Click d"
         android:id="@+id/btn"/>
+    <com.example.myapplication.PinEntryEditText2
+        android:id="@+id/txt_pin_entry2"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:cursorVisible="false"
+        android:layout_marginHorizontal="20dp"
+        android:digits="1234567890"
+        android:inputType="number"
+        android:maxLength="6"
+        android:layout_marginTop="30dp"
+        android:textIsSelectable="false"
+        android:textSize="20sp" />
 </LinearLayout>
