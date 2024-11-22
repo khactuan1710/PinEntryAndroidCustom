@@ -49,7 +49,7 @@ public class PinEntryEditText extends EditText {
     ColorStateList mColorStates = new ColorStateList(mStates, mColors);
 
     private int mCurrentIndex = 0; // The index of the current character being edited
-    private boolean mShowCursor = false; // Whether to show the cursor or not
+    private boolean mShowCursor = false;
     private final Handler mHandler = new Handler();
     private final Runnable mCursorBlinkRunnable = new Runnable() {
         @Override
