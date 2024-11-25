@@ -14,6 +14,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -24,6 +28,7 @@ public class SocketService extends Service {
 
     private Socket mSocket;
     public static final String CHANNEL_ID = "socket_channel_id";
+    private String socketUrl = "http://192.168.1.5:8080";
 
     @Override
     public void onCreate() {
@@ -53,8 +58,25 @@ public class SocketService extends Service {
         startForeground(1, notification);
 
         // Kết nối tới server
+        connectSocket(socketUrl);
+
+
+    }
+
+
+    private void connectSocket(String url) {
+        if (mSocket != null) {
+            // Ngắt kết nối
+            if (mSocket.connected()) {
+                mSocket.disconnect();
+            }
+            // Xóa tất cả listener để tránh lỗi callback cũ bị gọi lại
+            mSocket.off();
+            mSocket = null;
+        }
+
         try {
-            mSocket = IO.socket("http://10.10.113.225:8080");
+            mSocket = IO.socket(url);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -80,8 +102,9 @@ public class SocketService extends Service {
                     Log.w("SocketService", "Socket disconnected.");
                 }
             });
-
             mSocket.connect();
+
+
 
             mSocket.on("new_message", new Emitter.Listener() {
                 @Override
@@ -99,30 +122,22 @@ public class SocketService extends Service {
             mSocket.on("button_clicked", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    // Xử lý sự kiện khi nhận được thông điệp từ server
                     String message = (String) args[0];
                     System.out.println("Received from server: " + message);
 
-                    // Giả sử message có dạng: "Button was clicked! Phone number: 0859864442"
-                    // Tách số điện thoại từ message
                     String phoneNumber = extractPhoneNumber(message);
 
-                    // Hiển thị thông báo (nếu cần)
                     showNotification("Gửi OTP thành công");
 
-                    // Gửi SMS đến số điện thoại vừa nhận
                     sendSms(phoneNumber, "Mã OTP của bạn là: 123456");
                 }
             });
         }
-
     }
 
-    // Hàm tách số điện thoại từ message
     private String extractPhoneNumber(String message) {
         String phoneNumber = "";
         if (message != null && message.contains("Phone number: ")) {
-            // Lấy số điện thoại sau từ khóa "Phone number: "
             phoneNumber = message.split("Phone number: ")[1].trim();
         }
         return phoneNumber;
@@ -137,6 +152,44 @@ public class SocketService extends Service {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            String sender = intent.getStringExtra("sender");
+            String message = intent.getStringExtra("message");
+
+            if (sender != null && message != null) {
+                emitSmsToServer(sender, message);
+            }
+
+            String newUrl = intent.getStringExtra("socket_url");
+            if (newUrl != null && !newUrl.isEmpty()) {
+                socketUrl = newUrl;
+                connectSocket(socketUrl);
+            }
+        }
+
+        return START_STICKY;
+    }
+
+    private void emitSmsToServer(String sender, String message) {
+        if (mSocket != null && mSocket.connected()) {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("sender", sender);
+                jsonObject.put("message", message);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            mSocket.emit("sms_received", jsonObject);
+            Log.d("SocketService", "Emitted SMS to server: " + jsonObject.toString());
+        } else {
+            Log.e("SocketService", "Socket is not connected. Cannot emit SMS.");
+        }
+    }
+
 
     private void showNotification(String message) {
         // Tạo thông báo hiển thị khi nhận được dữ liệu từ server

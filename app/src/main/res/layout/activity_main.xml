@@ -5,35 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="16dp"
     tools:context=".MainActivity">
 
-    <com.example.myapplication.PinEntryEditText
-        android:id="@+id/txt_pin_entry"
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/edt"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:cursorVisible="false"
-        android:layout_marginHorizontal="20dp"
-        android:digits="1234567890"
-        android:inputType="number"
-        android:maxLength="6"
-        android:layout_marginTop="30dp"
-        android:textIsSelectable="false"
-        android:textSize="20sp" />
-    <Button
+        android:layout_height="wrap_content"
+        android:hint="input socket url"/>
+    <android.support.v7.widget.AppCompatButton
+        android:layout_marginTop="8dp"
+        android:id="@+id/btn_enter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Click d"
-        android:id="@+id/btn"/>
-    <com.example.myapplication.PinEntryEditText2
-        android:id="@+id/txt_pin_entry2"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:cursorVisible="false"
-        android:layout_marginHorizontal="20dp"
-        android:digits="1234567890"
-        android:inputType="number"
-        android:maxLength="6"
-        android:layout_marginTop="30dp"
-        android:textIsSelectable="false"
-        android:textSize="20sp" />
+        android:text="Enter"/>
 </LinearLayout>
