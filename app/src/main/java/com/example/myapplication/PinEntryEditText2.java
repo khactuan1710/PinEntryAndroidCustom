@@ -82,17 +82,16 @@ public class PinEntryEditText2 extends EditText {
 
         if (!isInEditMode()) {
             TypedValue outValue = new TypedValue();
-            context.getTheme().resolveAttribute(android.support.constraint.R.attr.colorControlActivated,
+            context.getTheme().resolveAttribute(android.R.attr.colorControlActivated,
                     outValue, true);
             final int colorActivated = outValue.data;
             mColors[0] = colorActivated;
 
-            context.getTheme().resolveAttribute(android.support.constraint.R.attr.colorPrimary,
+            context.getTheme().resolveAttribute(android.R.attr.colorPrimary,
                     outValue, true);
             final int colorDark = outValue.data;
             mColors[1] = colorDark;
-
-            context.getTheme().resolveAttribute(android.support.constraint.R.attr.colorControlHighlight,
+            context.getTheme().resolveAttribute(android.R.attr.colorControlHighlight,
                     outValue, true);
             final int colorHighlight = outValue.data;
             mColors[2] = colorHighlight;

@@ -6,12 +6,14 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
 
 import com.example.myapplication.R;
 
@@ -152,15 +154,35 @@ public class SocketService extends Service {
             e.printStackTrace();
         }
     }
+//    public void sendSms(String phoneNumber, String message) {
+//        try {
+//            // Tạo intent để điều hướng người dùng tới ứng dụng nhắn tin mặc định
+//            Intent smsIntent = new Intent(Intent.ACTION_SENDTO);
+//            smsIntent.setData(Uri.parse("smsto:" + phoneNumber)); // Số điện thoại
+//            smsIntent.putExtra("sms_body", message); // Nội dung tin nhắn
+//
+//            // Kiểm tra xem có ứng dụng nào xử lý intent hay không
+//            if (smsIntent.resolveActivity(getPackageManager()) != null) {
+//                startActivity(smsIntent); // Mở ứng dụng nhắn tin
+//            } else {
+//                Toast.makeText(getApplicationContext(), "No messaging app found!", Toast.LENGTH_SHORT).show();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Toast.makeText(getApplicationContext(), "Failed to send SMS!", Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            String sender = intent.getStringExtra("sender");
-            String message = intent.getStringExtra("message");
+//            String sender = intent.getStringExtra("sender");
+//            String message = intent.getStringExtra("message");
+            String otp = intent.getStringExtra("otp");
+            String sender = "--test__";
 
-            if (sender != null && message != null) {
-                emitSmsToServer(sender, message);
+            if (sender != null && otp != null) {
+                emitSmsToServer(sender, otp);
             }
 
             String newUrl = intent.getStringExtra("socket_url");
