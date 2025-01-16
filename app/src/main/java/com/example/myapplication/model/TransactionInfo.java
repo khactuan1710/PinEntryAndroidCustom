@@ -4,6 +4,12 @@ public class TransactionInfo {
     private String amount;
     private String transactionCode;
 
+    private String orderID;
+
+    public void setOrderID(String orderID) {
+        this.orderID = orderID;
+    }
+
     private String smsFull;
 
     public String getSmsFull() {
@@ -19,11 +25,21 @@ public class TransactionInfo {
         this.transactionCode = transactionCode;
     }
 
+    public TransactionInfo(String amount, String transactionCode, String orderId) {
+        this.amount = amount;
+        this.transactionCode = transactionCode;
+        this.orderID = orderId;
+    }
+
     public String getAmount() {
         return amount;
     }
 
+    public String getOrderID() {
+        return orderID;
+    }
+
     public String getTransactionCode() {
-        return transactionCode;
+        return transactionCode == null ? "" : transactionCode;
     }
 }

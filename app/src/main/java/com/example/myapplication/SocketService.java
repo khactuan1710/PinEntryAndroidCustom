@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -220,78 +221,52 @@ public class SocketService extends Service {
         if (intent != null) {
             String sender = intent.getStringExtra("sender");
             String message = intent.getStringExtra("message");
-//            String otp = intent.getStringExtra("otp");
-//            String sender = "--test__";
-
-//            Toast.makeText(getApplicationContext(), "sender: " + sender + "\n message: " + message, Toast.LENGTH_SHORT).show();
             if (sender != null && message != null) {
+                try {
+                    TransactionInfo transactionInfo = parseMessage(message);
 
-//                emitSmsToServer(sender, message);
-                //bật thiết bị
-                TransactionInfo transactionInfo = parseMessage(message);
+                    Pattern pattern = Pattern.compile("(?<=\\s)[a-zA-Z0-9]{10}$");
+                    Matcher matcher = pattern.matcher(transactionInfo.getTransactionCode());
 
-                Pattern pattern = Pattern.compile("(?<=\\s)[a-zA-Z0-9]{10}$");
-                Matcher matcher = pattern.matcher(transactionInfo.getTransactionCode());
-
-                String orderId= "";
-                if (matcher.find()) {
-                    orderId = matcher.group(0);
-                }
+                    String orderId= "";
+                    if (matcher.find()) {
+                        orderId = matcher.group(0);
+                    }
 
 //                showToast("ket noi thanh cong");
-                if (transactionInfo != null) {
+                    if (transactionInfo.getOrderID() != null && !transactionInfo.getOrderID().isEmpty()) {
 
-                    // Khởi tạo Retrofit
-                    ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+                        // Khởi tạo Retrofit
+                        ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
 
 
-                    // Tạo đối tượng TransactionRequest
-                    TransactionRequest transactionRequest = new TransactionRequest(
-                            orderId,
-                            Integer.parseInt(transactionInfo.getAmount().replace(".", "")),
-                            transactionInfo.getTransactionCode()
-                    );
+                        // Tạo đối tượng TransactionRequest
+                        TransactionRequest transactionRequest = new TransactionRequest(
+                                orderId,
+                                Integer.parseInt(transactionInfo.getAmount().replace(".", "")),
+                                transactionInfo.getTransactionCode()
+                        );
+                        transactionRequest.setSmsFull(message);
+                        transactionRequest.setSender(sender);
+                        new TransactionTask().execute(transactionRequest);
+                    }else {
+                        TransactionRequest transactionRequest = new TransactionRequest();
+                        transactionRequest.setSmsFull(message);
+                        transactionRequest.setSender(sender);
+
+                        new TransactionTask2().execute(transactionRequest);
+                    }
+                }catch (Exception e) {
+                    TransactionRequest transactionRequest = new TransactionRequest();
                     transactionRequest.setSmsFull(message);
-//                    showToast(orderId + "orderId");
+                    transactionRequest.setSender(sender);
 
-                    new TransactionTask().execute(transactionRequest);
-
-
-//                    Call<TransactionResponse> call = apiService.createTransaction(transactionRequest);
-//
-//                    try {
-//                        // Thực hiện gọi API đồng bộ trong IntentService
-//                        Response<TransactionResponse> response = call.execute();
-//                        if (response.isSuccessful() && response.body() != null) {
-//                            TransactionResponse transactionResponse = response.body();
-//                            Log.d("ApiService2", "Transaction success: " + transactionResponse.getMessage());
-//
-//                            // Gửi thông báo về UI thread
-//                            showToast("Transaction success: " + transactionResponse.getMessage());
-//                        } else {
-//                            Log.e("ApiService2", "Transaction failed: " + response.errorBody().string());
-//                            showToast("Transaction failed: " + response.errorBody().string());
-//                        }
-//                    } catch (Exception e) {
-//                        Log.e("ApiService2", "Transaction API error: " + e.getMessage(), e);
-//                        showToast("Transaction API error: " + e.getMessage());
-//                    }
+                    new TransactionTask2().execute(transactionRequest);
                 }
 
-//                toggleDevice("amount", "transactionCode");
-            }
 
-//            String newUrl = intent.getStringExtra("socket_url");
-//            if (newUrl != null && !newUrl.isEmpty()) {
-//                socketUrl = newUrl;
-//                connectSocket(socketUrl);
-//            }
-//
-//            int isOnOff = intent.getIntExtra("isOnOff", 0);
-//            String deviceId = intent.getStringExtra("deviceId");
-//            if (deviceId != null && !deviceId.isEmpty()) {
-//                onOff(isOnOff, deviceId);
-//            }
+
+            }
         }
 
         return START_STICKY;
@@ -306,10 +281,16 @@ public class SocketService extends Service {
         protected TransactionResponse doInBackground(TransactionRequest... transactionRequests) {
             ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
 
+            SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+            String token = sharedPreferences.getString("AUTH_TOKEN", null);  // Lấy token
+//            Toast.makeText(getApplicationContext(), token, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), "token", Toast.LENGTH_SHORT).show();
+//            Log.d("VVVVV", token);
+//            Log.d("AAAAA", "token");
             // Lấy transactionRequest từ tham số đầu vào
             TransactionRequest transactionRequest = transactionRequests[0];
 
-            Call<TransactionResponse> call = apiService.createTransaction(transactionRequest);
+            Call<TransactionResponse> call = apiService.createTransaction("Bearer " + token, transactionRequest);
 
             try {
                 // Thực hiện gọi API đồng bộ trong doInBackground()
@@ -330,11 +311,51 @@ public class SocketService extends Service {
             super.onPostExecute(transactionResponse);
             if (transactionResponse != null) {
                 // Gọi UI update sau khi API call hoàn tất
-                Log.d("ApiService2", "Transaction success: " + transactionResponse.getMessage());
-                showToast("Transaction success: " + transactionResponse.getMessage());
+//                Log.d("ApiService2", "Transaction success: " + transactionResponse.getMessage());
+//                showToast("Transaction success: " + transactionResponse.getMessage());
             } else {
-                Log.e("ApiService2", "Transaction failed");
-                showToast("Transaction failed");
+//                Log.e("ApiService2", "Transaction failed");
+//                showToast("Transaction failed");
+            }
+        }
+    }
+
+    private class TransactionTask2 extends AsyncTask<TransactionRequest, Void, TransactionResponse> {
+
+        @Override
+        protected TransactionResponse doInBackground(TransactionRequest... transactionRequests) {
+            ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+
+            SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+            String token = sharedPreferences.getString("AUTH_TOKEN", null);  // Lấy token
+            TransactionRequest transactionRequest = transactionRequests[0];
+
+            Call<TransactionResponse> call = apiService.createTransaction("Bearer " + token, transactionRequest);
+
+            try {
+                // Thực hiện gọi API đồng bộ trong doInBackground()
+                Response<TransactionResponse> response = call.execute();
+                if (response.isSuccessful() && response.body() != null) {
+                    return response.body();  // Trả về TransactionResponse nếu thành công
+                } else {
+                    return null;  // Trả về null nếu thất bại
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;  // Trả về null nếu có lỗi
+            }
+        }
+
+        @Override
+        protected void onPostExecute(TransactionResponse transactionResponse) {
+            super.onPostExecute(transactionResponse);
+            if (transactionResponse != null) {
+                // Gọi UI update sau khi API call hoàn tất
+//                Log.d("ApiService2", "Transaction success: " + transactionResponse.getMessage());
+//                showToast("Transaction success: " + transactionResponse.getMessage());
+            } else {
+//                Log.e("ApiService2", "Transaction failed");
+//                showToast("Transaction failed");
             }
         }
     }
@@ -365,17 +386,28 @@ public class SocketService extends Service {
         // Biểu thức chính quy để tìm số tiền và mã giao dịch
         String regex = "\\+([0-9,.]+)\\sVND.*ND:\\s(.*)";
 
+
         // Compile biểu thức chính quy
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(message);
+
+
+        String regex2 = "([A-Za-z0-9]{4})\\s([A-Za-z0-9]{4})\\s([A-Za-z0-9]{10})";
+        Pattern pattern2 = Pattern.compile(regex2);
+        Matcher matcher2 = pattern2.matcher(message);
 
         // Kiểm tra và lấy kết quả
         if (matcher.find()) {
             String amount = matcher.group(1);  // Số tiền
             String transactionCode = matcher.group(2);  // Mã giao dịch
 
+            String orderid = "";
+            if(matcher2.find()) {
+                orderid = matcher2.group(3);
+            }
+
             // Trả về đối tượng TransactionInfo chứa số tiền và mã giao dịch
-            return new TransactionInfo(amount, transactionCode);
+            return new TransactionInfo(amount, transactionCode, orderid);
         } else {
             // Xử lý nếu không tìm thấy dữ liệu
 //            Toast.makeText(getApplicationContext(), "Không tìm thấy thông tin giao dịch.", Toast.LENGTH_SHORT).show();

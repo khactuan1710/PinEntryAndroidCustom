@@ -41,37 +41,37 @@ public class ApiService2 extends IntentService {
                 return;
             }
 
-            // Khởi tạo Retrofit
-            ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
-
-            TransactionInfo transactionInfo = parseMessage(message);
-
-            // Tạo đối tượng TransactionRequest
-            TransactionRequest transactionRequest = new TransactionRequest(
-                    "osijdihidhhd",
-                    Integer.parseInt(transactionInfo.getAmount().replace(".", "")),
-                    transactionInfo.getTransactionCode()
-            );
-
-            Call<TransactionResponse> call = apiService.createTransaction(transactionRequest);
-
-            try {
-                // Thực hiện gọi API đồng bộ trong IntentService
-                Response<TransactionResponse> response = call.execute();
-                if (response.isSuccessful() && response.body() != null) {
-                    TransactionResponse transactionResponse = response.body();
-                    Log.d("ApiService2", "Transaction success: " + transactionResponse.getMessage());
-
-                    // Gửi thông báo về UI thread
-                    showToast("Transaction success: " + transactionResponse.getMessage());
-                } else {
-                    Log.e("ApiService2", "Transaction failed: " + response.errorBody().string());
-                    showToast("Transaction failed: " + response.errorBody().string());
-                }
-            } catch (Exception e) {
-                Log.e("ApiService2", "Transaction API error: " + e.getMessage(), e);
-                showToast("Transaction API error: " + e.getMessage());
-            }
+//            // Khởi tạo Retrofit
+//            ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+//
+//            TransactionInfo transactionInfo = parseMessage(message);
+//
+//            // Tạo đối tượng TransactionRequest
+//            TransactionRequest transactionRequest = new TransactionRequest(
+//                    "osijdihidhhd",
+//                    Integer.parseInt(transactionInfo.getAmount().replace(".", "")),
+//                    transactionInfo.getTransactionCode()
+//            );
+//
+//            Call<TransactionResponse> call = apiService.createTransaction(transactionRequest);
+//
+//            try {
+//                // Thực hiện gọi API đồng bộ trong IntentService
+//                Response<TransactionResponse> response = call.execute();
+//                if (response.isSuccessful() && response.body() != null) {
+//                    TransactionResponse transactionResponse = response.body();
+//                    Log.d("ApiService2", "Transaction success: " + transactionResponse.getMessage());
+//
+//                    // Gửi thông báo về UI thread
+//                    showToast("Transaction success: " + transactionResponse.getMessage());
+//                } else {
+//                    Log.e("ApiService2", "Transaction failed: " + response.errorBody().string());
+//                    showToast("Transaction failed: " + response.errorBody().string());
+//                }
+//            } catch (Exception e) {
+//                Log.e("ApiService2", "Transaction API error: " + e.getMessage(), e);
+//                showToast("Transaction API error: " + e.getMessage());
+//            }
         }
     }
     // Sử dụng Handler để hiển thị Toast trong UI thread

@@ -1,6 +1,5 @@
 package com.example.myapplication.webview;
 
-
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -10,6 +9,9 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class WebViewActivity extends AppCompatActivity {
     @Override
@@ -25,6 +27,7 @@ public class WebViewActivity extends AppCompatActivity {
         // Nhận URL từ Intent
         String url = getIntent().getStringExtra("url");
         String header = getIntent().getStringExtra("header");
+        String token = getIntent().getStringExtra("token");
 
         // Set tiêu đề
         TextView tvHeader = findViewById(R.id.tv_header);
@@ -34,6 +37,18 @@ public class WebViewActivity extends AppCompatActivity {
         WebView webView = findViewById(R.id.webview);
         webView.setWebViewClient(new WebViewClient());
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl(url);
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + token); // Thêm token vào header
+
+        // Load URL với header
+        webView.loadUrl(url, headers);
+
+        // Thêm icon reload và xử lý reload
+        ImageView ivReload = findViewById(R.id.iv_reload);
+        ivReload.setOnClickListener(view -> {
+            // Reload trang web
+            webView.reload();
+        });
     }
 }

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,14 +8,14 @@
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#2196F3"
+        android:background="#ff4b19"
         android:padding="16dp">
 
         <!-- Icon Back -->
         <ImageView
             android:id="@+id/iv_back"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_back"
@@ -35,6 +34,19 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:gravity="center" />
+
+        <!-- Icon Reload -->
+        <ImageView
+            android:id="@+id/iv_reload"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_reload"
+            android:contentDescription="Reload"
+            android:tint="#FFFFFF"
+            android:padding="4dp" />
+
     </RelativeLayout>
 
     <!-- WebView -->

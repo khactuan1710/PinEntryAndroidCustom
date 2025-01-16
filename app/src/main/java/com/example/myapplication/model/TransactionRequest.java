@@ -5,11 +5,19 @@ public class TransactionRequest {
     private int amount;
     private String smsContent;
     private String smsFull;
+    private String sender;
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
 
     public TransactionRequest(String orderID, int amount, String smsContent) {
         this.orderID = orderID;
         this.amount = amount;
         this.smsContent = smsContent;
+    }
+
+    public TransactionRequest() {
     }
 
     public String getSmsFull() {
