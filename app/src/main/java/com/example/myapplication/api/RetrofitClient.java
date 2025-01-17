@@ -3,6 +3,7 @@ package com.example.myapplication.api;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -11,8 +12,13 @@ public class RetrofitClient {
 
     public static Retrofit getInstance() {
         if (retrofit == null) {
-            // Cấu hình OkHttpClient với timeout 90 giây
+            // Tạo HttpLoggingInterceptor
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // Ghi log toàn bộ (request và response)
+
+            // Cấu hình OkHttpClient với HttpLoggingInterceptor và timeout 90 giây
             OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .addInterceptor(loggingInterceptor)  // Thêm logging interceptor
                     .connectTimeout(90, TimeUnit.SECONDS) // Thời gian kết nối tối đa
                     .readTimeout(90, TimeUnit.SECONDS)    // Thời gian đọc tối đa
                     .writeTimeout(90, TimeUnit.SECONDS)   // Thời gian ghi tối đa
