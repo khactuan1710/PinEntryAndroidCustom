@@ -80,6 +80,13 @@
             android:text="Lịch sử giặt" />
     </LinearLayout>
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_user_manage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_gravity="end"
+        android:text="Quản lý chủ trọ" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

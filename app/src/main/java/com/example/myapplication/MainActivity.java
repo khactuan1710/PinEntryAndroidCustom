@@ -69,8 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
     AppCompatTextView tvFullName;
     RecyclerView recyclerView;
+
+    AppCompatButton buttonUserManage;
     String token = "";
     String fullname = "";
+
     private List<DeviceResponse.Device> deviceList;
     private DeviceAdapter deviceAdapter;
     private ApiService apiService;
@@ -89,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         token = sharedPreferences.getString("AUTH_TOKEN", null);
         fullname = sharedPreferences.getString("FULL_NAME", null);
         tvFullName = findViewById(R.id.tv_full_name);
+        buttonUserManage = findViewById(R.id.btn_user_manage);
 
         tvFullName.setText("Xin chào " + (fullname == null ? "" : fullname));
 
@@ -148,16 +152,15 @@ public class MainActivity extends AppCompatActivity {
 
         callGetListDevice();
 
-
-//        AppCenter.start(getApplication(), "f078b81b-441d-4735-a936-3c5275f5ec17",
-//                Analytics.class, Crashes.class, Distribute.class);
-
-
-        //startForegroundService
         Intent intent22 = new Intent(activity, SocketService.class);
         activity.startService(intent22);
 
+        buttonUserManage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
 
 
 
@@ -168,52 +171,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("token", token);
             startActivity(intent);
         });
-//        pinEntryEditText = findViewById(R.id.txt_pin_entry);
-//        Intent intent = new Intent(activity, SocketService.class);
-//        activity.startService(intent);
 
-        String[] urls = {
-                "https://iot.mimi.sg",
-                "http://192.168.1.11:5001",
-                "http://192.168.1.15:5001",
-                "http://192.168.1.208:5001",
-                "http://192.168.1.12:5001"
-        };
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, urls);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-//        Switch switchWasher001 = findViewById(R.id.switch_washer_001);
-//        Switch switchWasher002 = findViewById(R.id.switch_washer_002);
-//
-//        // Sự kiện cho Máy giặt 001
-//        switchWasher001.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//            if (isChecked) {
-////                Toast.makeText(this, "Máy giặt 001 được bật", Toast.LENGTH_SHORT).show();
-////                onOff(1, "m001");
-//                // Xử lý logic khi bật Máy giặt 001
-//                callAPIOnOff(1, "m001", apiService);
-//            } else {
-////                Toast.makeText(this, "Máy giặt 001 được tắt", Toast.LENGTH_SHORT).show();
-////                onOff(0, "m001");
-//                // Xử lý logic khi tắt Máy giặt 001
-//                callAPIOnOff(0, "m001", apiService);
-//            }
-//        });
-//
-//        // Sự kiện cho Máy giặt 002
-//        switchWasher002.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//            if (isChecked) {
-////                Toast.makeText(this, "Máy giặt 002 được bật", Toast.LENGTH_SHORT).show();
-////                onOff(1, "m002");
-//                // Xử lý logic khi bật Máy giặt 002
-//                callAPIOnOff(1, "m002", apiService);
-//            } else {
-////                Toast.makeText(this, "Máy giặt 002 được tắt", Toast.LENGTH_SHORT).show();
-////                onOff(0, "m002");
-//                // Xử lý logic khi tắt Máy giặt 002
-//                callAPIOnOff(0, "m002", apiService);
-//            }
-//        });
 
         startSmsRetriever();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
