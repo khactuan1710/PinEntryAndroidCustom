@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <!-- Header -->
@@ -20,7 +21,7 @@
             android:layout_centerVertical="true"
             android:src="@drawable/ic_back"
             android:contentDescription="Back"
-            android:tint="#FFFFFF"
+            app:tint="#FFFFFF"
             android:padding="4dp" />
 
         <!-- Header Title -->
@@ -44,7 +45,7 @@
             android:layout_centerVertical="true"
             android:src="@drawable/ic_reload"
             android:contentDescription="Reload"
-            android:tint="#FFFFFF"
+            app:tint="#FFFFFF"
             android:padding="4dp" />
 
     </RelativeLayout>

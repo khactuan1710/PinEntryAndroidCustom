@@ -1,5 +1,6 @@
 package com.example.myapplication.webview;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -18,7 +19,7 @@ public class WebViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
-
+        getWindow().setStatusBarColor(Color.parseColor("#ff4b19"));
         ImageView ivBack = findViewById(R.id.iv_back);
         ivBack.setOnClickListener(view -> {
             finish(); // Quay lại Activity trước đó

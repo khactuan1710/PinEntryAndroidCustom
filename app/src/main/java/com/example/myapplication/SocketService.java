@@ -282,7 +282,7 @@ public class SocketService extends Service {
             ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
 
             SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-            String token = sharedPreferences.getString("AUTH_TOKEN", null);  // Lấy token
+            String token = sharedPreferences.getString("AUTH_TOKEN", "");  // Lấy token
 //            Toast.makeText(getApplicationContext(), token, Toast.LENGTH_SHORT).show();
 //            Toast.makeText(getApplicationContext(), "token", Toast.LENGTH_SHORT).show();
 //            Log.d("VVVVV", token);
@@ -327,7 +327,7 @@ public class SocketService extends Service {
             ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
 
             SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-            String token = sharedPreferences.getString("AUTH_TOKEN", null);  // Lấy token
+            String token = sharedPreferences.getString("AUTH_TOKEN", "");  // Lấy token
             TransactionRequest transactionRequest = transactionRequests[0];
 
             Call<TransactionResponse> call = apiService.createTransaction("Bearer " + token, transactionRequest);

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".userManage.UserManageActivity">
+    android:background="#f7f8fa"
+    tools:context=".feature.userManage.UserManageActivity">
     <RelativeLayout
         android:id="@+id/header"
         app:layout_constraintTop_toTopOf="parent"
@@ -44,6 +45,7 @@
             android:id="@+id/iv_reload"
             android:layout_width="44dp"
             android:layout_height="44dp"
+            android:visibility="gone"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_reload"
@@ -54,8 +56,31 @@
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcv_user"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        android:layout_marginHorizontal="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        tools:listitem="@layout/item_user"
+        android:layout_below="@id/header"
+        tools:itemCount="5"
+        android:layout_marginBottom="8dp"
         android:layout_marginTop="10dp"/>
 
-</LinearLayout>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_addAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_default_button"
+        android:gravity="center"
+        android:text="Tạo tài khoản"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

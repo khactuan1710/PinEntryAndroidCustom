@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomEditText">
+        <attr name="hint" format="string" />
+        <attr name="hintForce" format="string" />
+        <attr name="maxLength" format="integer" />
+        <attr name="endText" format="string" />
+        <attr name="texLayoutId" format="reference" />
+        <attr name="textInputEditTextId" format="reference" />
+        <attr name="enable" format="boolean" />
+        <attr name="showClearButton" format="boolean" />
+        <attr name="clickViewEnable" format="boolean" />
+        <attr name="isMultiLine" format="boolean" />
+        <attr name="showBgRadius" format="boolean" />
+        <attr name="multiLine" format="boolean" />
+        <attr name="endIcon" format="reference|color" />
+        <attr name="titleColor" format="reference|color" />
+        <attr name="inputType" format="string">
+            <enum name="text" value="0" />
+            <enum name="number" value="1" />
+            <enum name="password" value="2" />
+            <enum name="money" value="3" />
+            <enum name="textCapCharacters" value="4" />
+        </attr>
+        <attr name="textStyle" format="string">
+            <enum name="TextStyleNormal" value="0" />
+            <enum name="TextStyleMedium" value="1" />
+            <enum name="TextStyleBold" value="2" />
+        </attr>
+        <attr name="imeOptions" format="string">
+            <enum name="actionNext" value="0" />
+            <enum name="actionDone" value="1" />
+        </attr>
+        <attr name="textColorCustom" format="color" />
+    </declare-styleable>
+</resources>

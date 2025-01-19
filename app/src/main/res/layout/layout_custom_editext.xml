@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:id="@+id/ctr_container"
+    android:paddingTop="7dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginHorizontal="13dp"
+        app:hintTextColor="#B5B4B4"
+        app:layout_constraintEnd_toStartOf="@+id/iv_clear"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_input"
+            android:textSize="17sp"
+            android:textColor="@color/color_44494D"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:layout_marginBottom="5dp"
+            android:imeOptions="actionNext"
+            android:maxLength="200"
+            android:paddingTop="3dp"
+            android:paddingBottom="6dp"
+            android:textColorHint="#B5B4B4" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_clear"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginEnd="5dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="6dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/iv_password"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/clear" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_password"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="5dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="6dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/tv_end"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_eye_hide_new" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_end"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="5dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="6dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_end"
+        android:textSize="16dp"
+        android:textColor="@color/color_ff4b19"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="5dp"
+        android:background="?attr/selectableItemBackground"
+        android:padding="5dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/iv_end"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="My Vt" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:alpha="0.4"
+        android:background="#ADB5BD"
+        app:layout_constraintBottom_toBottomOf="@+id/ctr_container" />
+
+
+    <FrameLayout
+        android:id="@+id/frm_click"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/ctr_container"
+        app:layout_constraintTop_toTopOf="@+id/ctr_container" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

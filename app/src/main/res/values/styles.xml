@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/push_top_down</item>
+        <item name="android:windowExitAnimation">@anim/push_bottom_up</item>
+    </style>
+
+    <style name="DialogTTC" parent="android:Theme.Dialog">
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="BottomSheetDialogThemeV6" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyleV6</item>
+    </style>
+
+    <style name="AppModalStyleV6" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bg_header_choose_history_trade</item>
+    </style>
+
+</resources>

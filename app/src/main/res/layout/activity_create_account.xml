@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f7f8fa">
+    <RelativeLayout
+        android:id="@+id/header"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ff4b19"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Back"
+            android:padding="4dp"
+            app:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/tv_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Tạo tài khoản"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <ImageView
+            android:id="@+id/iv_reload"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:visibility="gone"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_reload"
+            android:contentDescription="Reload"
+            android:padding="4dp"
+            app:tint="#FFFFFF" />
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        app:layout_constraintBottom_toTopOf="@id/btn_addAccount"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:descendantFocusability="beforeDescendants"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        android:focusableInTouchMode="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:orientation="vertical">
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edtUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Tài khoản đăng nhập"
+                app:inputType="text"
+                android:layout_marginTop="12dp"
+                android:layout_marginHorizontal="12dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edtPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Mật khẩu đăng nhập"
+                app:inputType="text"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="12dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edtPhoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Số điện thoại"
+                app:inputType="text"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="12dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edtFullname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Họ và tên"
+                app:inputType="text"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="12dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edtAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Địa chỉ"
+                app:inputType="text"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="12dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edtWeLinkAcc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Tài khoản Welink"
+                app:inputType="text"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="12dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edtWeLinkPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Mật khẩu Welink"
+                app:inputType="text"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="12dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/bankCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Chọn ngân hàng"
+                app:showClearButton="false"
+                app:clickViewEnable="true"
+                app:endIcon="@drawable/arrow_drop_down_address"
+                app:inputType="text"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="12dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edtSTK"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Số tài khoản"
+                app:inputType="text"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="12dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edtSTKName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Tên người dùng tài khoản"
+                app:inputType="text"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="12dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/typeAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Loại tài khoản"
+                app:inputType="text"
+                app:showClearButton="false"
+                app:clickViewEnable="true"
+                app:endIcon="@drawable/arrow_drop_down_address"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="12dp"
+                />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_addAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_default_button"
+        android:gravity="center"
+        android:text="Tạo tài khoản"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_alignParentBottom="true"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+</androidx.constraintlayout.widget.ConstraintLayout>

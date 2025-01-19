@@ -4,32 +4,22 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsManager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -39,11 +29,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.adapter.DeviceAdapter;
 import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
-import com.example.myapplication.login.LoginActivity;
+import com.example.myapplication.feature.login.LoginActivity;
 import com.example.myapplication.model.ApiResponse;
 import com.example.myapplication.model.DeviceRequest;
 import com.example.myapplication.model.DeviceResponse;
 import com.example.myapplication.model.TransactionInfo;
+import com.example.myapplication.feature.userManage.UserManageActivity;
 import com.example.myapplication.webview.WebViewActivity;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
@@ -85,12 +76,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //        button = findViewById(R.id.btn);
-
+        getWindow().setStatusBarColor(Color.parseColor("#ff4b19"));
         Activity activity = this;
         apiService = RetrofitClient.getInstance().create(ApiService.class);
         SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-        token = sharedPreferences.getString("AUTH_TOKEN", null);
-        fullname = sharedPreferences.getString("FULL_NAME", null);
+        token = sharedPreferences.getString("AUTH_TOKEN", "");
+        fullname = sharedPreferences.getString("FULL_NAME", "");
         tvFullName = findViewById(R.id.tv_full_name);
         buttonUserManage = findViewById(R.id.btn_user_manage);
 
@@ -158,7 +149,8 @@ public class MainActivity extends AppCompatActivity {
         buttonUserManage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivity.this, UserManageActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -317,16 +309,16 @@ public class MainActivity extends AppCompatActivity {
         String otp = message.replaceAll("[^0-9]", ""); // Lấy toàn bộ số trong tin nhắn
         return otp.length() > 6 ? otp.substring(0, 6) : otp; // Giả định OTP là 6 chữ số
     }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 1) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
-            } else {
-//                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        if (requestCode == 1) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+////                Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+//            } else {
+////                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
 
     public void sendSms(String phoneNumber, String message) {

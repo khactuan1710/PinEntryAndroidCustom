@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context=".login.LoginActivity">
+    tools:context=".feature.login.LoginActivity">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="100dp"
@@ -25,95 +25,34 @@
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout"
+    <com.example.myapplication.CustomView.CustomEditText
+        android:id="@+id/edtPhoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="20dp"
-        app:hintTextColor="#B5B4B4"
-        app:layout_constraintEnd_toStartOf="@+id/iv_clear"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:hint="Nhập tài khoản*"
+        app:inputType="text"
+        />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edt_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:background="@null"
-            android:ellipsize="end"
-            android:hint="Nhập tài khoản"
-            android:imeOptions="actionNext"
-            android:inputType="number"
-            android:maxLength="200"
-            android:padding="5dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:singleLine="true"
-            android:textColor="#44494D"
-            android:textColorHint="#B5B4B4"
-            android:textSize="18sp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <View
-        android:id="@+id/line"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:alpha="0.4"
-        android:layout_marginHorizontal="16dp"
-        android:background="#ADB5BD" />
-
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout2"
+    <com.example.myapplication.CustomView.CustomEditText
+        android:id="@+id/edtPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="30dp"
-        app:hintTextColor="#B5B4B4"
-        app:layout_constraintEnd_toStartOf="@+id/iv_clear"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edt_input2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:background="@null"
-            android:ellipsize="end"
-            android:hint="Nhập mật khẩu"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:maxLength="200"
-            android:padding="5dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:singleLine="true"
-            android:textColor="#44494D"
-            android:textColorHint="#B5B4B4"
-            android:textSize="18sp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <View
-        android:id="@+id/line2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:alpha="0.4"
-        android:layout_marginHorizontal="16dp"
-        android:background="#ADB5BD" />
+        app:hint="Nhập mật khẩu*"
+        android:layout_marginTop="12dp"
+        app:inputType="password"
+        />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_login"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
         android:layout_marginTop="30dp"
+        android:background="@drawable/bg_default_button"
         android:layout_marginHorizontal="16dp"
-        android:background="#ff4b19"
         android:text="Đăng nhập"/>
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.example.myapplication.login;
+package com.example.myapplication.feature.login;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -15,15 +15,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.myapplication.CustomView.CustomEditText;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
-import com.example.myapplication.model.ApiResponse;
-import com.example.myapplication.model.DeviceRequest;
 import com.example.myapplication.model.LoginRequest;
 import com.example.myapplication.model.LoginResponse;
-import com.google.android.material.textfield.TextInputEditText;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,8 +30,8 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
 
-    TextInputEditText edUsername;
-    TextInputEditText edPassword;
+    CustomEditText edUsername;
+    CustomEditText edPassword;
     AppCompatButton loginBtn;
     ApiService apiService;
 
@@ -43,8 +41,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login2);
-        edUsername = findViewById(R.id.edt_input);
-        edPassword = findViewById(R.id.edt_input2);
+        edUsername = findViewById(R.id.edtPhoneNumber);
+        edPassword = findViewById(R.id.edtPassword);
         loginBtn = findViewById(R.id.btn_login);
         apiService = RetrofitClient.getInstance().create(ApiService.class);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

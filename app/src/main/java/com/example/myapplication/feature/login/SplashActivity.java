@@ -1,4 +1,4 @@
-package com.example.myapplication.login;
+package com.example.myapplication.feature.login;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,7 +32,7 @@ public class SplashActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             // Kiểm tra token trong SharedPreferences
             SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-            String token = sharedPreferences.getString("AUTH_TOKEN", null);
+            String token = sharedPreferences.getString("AUTH_TOKEN", "");
 
             Intent intent;
             if (token != null) {

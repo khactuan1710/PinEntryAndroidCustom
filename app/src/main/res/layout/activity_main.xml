@@ -40,7 +40,7 @@
             android:src="@drawable/phone_call"
             android:layout_marginRight="4dp"
             android:contentDescription="Reload"
-            android:tint="#FFFFFF"
+            app:tint="#FFFFFF"
             android:padding="4dp" />
 
         <ImageView
@@ -51,7 +51,8 @@
             android:layout_centerVertical="true"
             android:src="@drawable/exit"
             android:contentDescription="Reload"
-            android:tint="#FFFFFF"
+            app:tint="#FFFFFF"
+
             android:padding="4dp" />
 
     </RelativeLayout>
