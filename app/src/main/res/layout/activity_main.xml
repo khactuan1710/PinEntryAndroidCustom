@@ -65,6 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:gravity="center"
         android:layout_marginHorizontal="16dp"
         android:orientation="horizontal">
 
@@ -79,23 +80,23 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_history"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Lịch sử giặt" />
+        <androidx.appcompat.widget.AppCompatButton
+            app:layout_constraintTop_toBottomOf="@id/lnl_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/btn_user_manage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="Quản lý chủ trọ" />
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        app:layout_constraintTop_toBottomOf="@id/lnl_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/btn_user_manage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_gravity="end"
-        android:text="Quản lý chủ trọ" />
     <View
         android:id="@+id/view"
-        app:layout_constraintTop_toBottomOf="@id/btn_user_manage"
+        app:layout_constraintTop_toBottomOf="@id/lnl_name"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#c4c4c4"
