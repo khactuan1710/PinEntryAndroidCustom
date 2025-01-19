@@ -2,6 +2,7 @@ package com.example.myapplication.api;
 
 import com.example.myapplication.model.ApiResponse;
 import com.example.myapplication.model.BankCodeResponse;
+import com.example.myapplication.model.CreateDeviceRequest;
 import com.example.myapplication.model.DeviceRequest;
 import com.example.myapplication.model.DeviceResponse;
 import com.example.myapplication.model.LoginRequest;
@@ -61,5 +62,18 @@ public interface ApiService {
             @Header("Authorization") String token,
             @Body RegisterRequest registerRequest
     );
+
+    @POST("/devices")
+    Call<SimpleResult> registerDevice(
+            @Header("Authorization") String token,
+            @Body CreateDeviceRequest deviceRequest
+    );
+
+    @GET("/devices")
+    Call<DeviceResponse> getDevicesByHost(
+            @Header("Authorization") String authToken,  // Token để xác thực
+            @retrofit2.http.Query("hostID") String hostID // Query parameter: hostID
+    );
+
 
 }

@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -29,6 +30,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.adapter.DeviceAdapter;
 import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
+import com.example.myapplication.feature.createAccount.CreateAccountActivity;
+import com.example.myapplication.feature.createDevice.CreateDeviceActivity;
 import com.example.myapplication.feature.login.LoginActivity;
 import com.example.myapplication.model.ApiResponse;
 import com.example.myapplication.model.DeviceRequest;
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     AppCompatTextView tvFullName;
     RecyclerView recyclerView;
 
-    AppCompatButton buttonUserManage;
+    AppCompatButton buttonUserManage, buttonAddDevice;;
     String token = "";
     String fullname = "";
 
@@ -88,6 +91,14 @@ public class MainActivity extends AppCompatActivity {
         }
         tvFullName = findViewById(R.id.tv_full_name);
         buttonUserManage = findViewById(R.id.btn_user_manage);
+        buttonAddDevice = findViewById(R.id.btn_addDevice);
+        buttonAddDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, CreateDeviceActivity.class);
+                startActivityForResult(intent, 888);
+            }
+        });
 
         tvFullName.setText("Xin chào " + (fullname == null ? "" : fullname));
 
@@ -129,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
         deviceList = new ArrayList<>();
         recyclerView = findViewById(R.id.rcv_list);
-        deviceAdapter = new DeviceAdapter(this, deviceList);
+        deviceAdapter = new DeviceAdapter(this, token, deviceList);
         deviceAdapter.setItemClick(new DeviceAdapter.ItemClick() {
             @Override
             public void onClick(String deviceId, int isOnOff) {
@@ -147,8 +158,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (userData != null && !userData.getType().equals("admin")) {
             buttonUserManage.setVisibility(View.GONE);
+            buttonAddDevice.setVisibility(View.GONE);
         }else if(userData == null) {
             buttonUserManage.setVisibility(View.GONE);
+            buttonAddDevice.setVisibility(View.GONE);
         }
         buttonUserManage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,6 +219,12 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callGetListDevice();
     }
 
     private void onOff(int isOnOff, String deviceId) {

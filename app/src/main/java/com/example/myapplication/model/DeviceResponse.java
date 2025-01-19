@@ -7,6 +7,7 @@ public class DeviceResponse {
     private boolean isSuccess;
     private String message;
 
+
     public List<Device> getData() {
         return data == null ? null : data;
     }
@@ -36,6 +37,11 @@ public class DeviceResponse {
         private String currentStatus;
         private String deviceName;
         private String deviceFullName;
+        private String userID;
+
+        public String getUserID() {
+            return userID == null ? "" : userID;
+        }
 
         public String getDeviceId() {
             return deviceID == null ? "" : deviceID;

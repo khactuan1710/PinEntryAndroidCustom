@@ -24,6 +24,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
 import com.example.myapplication.feature.createAccount.CreateAccountActivity;
+import com.example.myapplication.feature.userDetail.UserDetailActivity;
 import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.SimpleResult;
 import com.example.myapplication.model.UpdateUserRequest;
@@ -68,6 +69,13 @@ public class UserManageActivity extends AppCompatActivity {
         manageUserAdapter.setItemClick(new ManageUserAdapter.ItemClick() {
             @Override
             public void onClick(UserResponse.User user) {
+                Intent intent = new Intent(UserManageActivity.this, UserDetailActivity.class);
+                intent.putExtra("USER_DATA", user); // Truyền đối tượng user
+                startActivity(intent);
+            }
+
+            @Override
+            public void onEdit(UserResponse.User user) {
                 EditUserDialogFragment dialogFragment = EditUserDialogFragment.newInstance(user);
                 dialogFragment.setOnUserUpdatedListener(updatedUser -> {
                     // Xử lý logic cập nhật người dùng ở đây

@@ -28,6 +28,7 @@ public class ManageUserAdapter extends RecyclerView.Adapter<ManageUserAdapter.De
     }
     public interface ItemClick{
         void onClick(UserResponse.User user);
+        void onEdit(UserResponse.User user);
     }
 
     public void setItemClick(ItemClick itemClick) {
@@ -56,6 +57,12 @@ public class ManageUserAdapter extends RecyclerView.Adapter<ManageUserAdapter.De
             holder.tvStatusActive.setTextColor(Color.parseColor("#ff4b19"));
         }
         holder.ivEditUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemClick.onEdit(user);
+            }
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 itemClick.onClick(user);

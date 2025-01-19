@@ -1,4 +1,4 @@
-package com.example.myapplication.feature.createAccount;
+package com.example.myapplication.feature.createDevice;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -17,15 +17,15 @@ import com.example.myapplication.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-public class TypeAccountBottomSheet extends BottomSheetDialogFragment {
+public class TypeServiceBottomSheet extends BottomSheetDialogFragment {
     OnTypeSelect onTypeSelect;
     AppCompatImageView ivClose;
-    AppCompatButton btnAdmin, btnOwner;
+    AppCompatButton btnMayGiat, btnThangMay;
 
-    public TypeAccountBottomSheet() {
+    public TypeServiceBottomSheet() {
 
     }
-    public void setOnAddressSelected(OnTypeSelect onTypeSelect) {
+    public void setOnSelected(OnTypeSelect onTypeSelect) {
         this.onTypeSelect = onTypeSelect;
     }
 
@@ -35,27 +35,27 @@ public class TypeAccountBottomSheet extends BottomSheetDialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         BottomSheetDialog bottomSheetDialog =new BottomSheetDialog(getActivity(), R.style.BottomSheetDialogThemeV6);
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.botom_sheet_type_account, null);
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.botom_sheet_type_service, null);
         ivClose = view.findViewById(R.id.iv_close);
-        btnAdmin = view.findViewById(R.id.btn_admin);
-        btnOwner = view.findViewById(R.id.btn_owner);
+        btnMayGiat = view.findViewById(R.id.btn_may_giat);
+        btnThangMay = view.findViewById(R.id.btn_thang_may);
         ivClose.setOnClickListener(new View.OnClickListener() {
                                        @Override
                                        public void onClick(View v) {
                                            dismiss();
                                        }
                                    });
-        btnAdmin.setOnClickListener(new View.OnClickListener() {
+        btnMayGiat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onTypeSelect.onChoose("Admin");
+                onTypeSelect.onChoose("Máy giặt");
                 dismiss();
             }
         });
-        btnOwner.setOnClickListener(new View.OnClickListener() {
+        btnThangMay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onTypeSelect.onChoose("Chủ trọ");
+                onTypeSelect.onChoose("Thang máy");
                 dismiss();
             }
         });

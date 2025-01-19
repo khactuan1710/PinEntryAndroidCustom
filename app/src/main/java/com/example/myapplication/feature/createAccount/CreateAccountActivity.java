@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -36,9 +37,11 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     CustomEditText edtUsername, edtPassword, edtPhoneNumber, edtFullname, edtAddress, edtWeLinkAcc, edtWeLinkPass, edtBankCode, edtSTK, edtSTKName, typeAccount;
     ApiService apiService;
+    ImageView ivBack, ivReload;
     AppCompatButton btnAddAccount;
     private List<BankCodeResponse.BankCode> bankCodeList = new ArrayList<>();
     private String token;
+    BankCodeResponse.BankCode bankCodeSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +71,17 @@ public class CreateAccountActivity extends AppCompatActivity {
         edtSTKName = findViewById(R.id.edtSTKName);
         typeAccount = findViewById(R.id.typeAccount);
         btnAddAccount = findViewById(R.id.btn_addAccount);
+        ivBack = findViewById(R.id.iv_back);
 
         apiService = RetrofitClient.getInstance().create(ApiService.class);
         getBankCodes();
+
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         typeAccount.setOnClickViewMaskListener(new CustomEditText.OnClickViewMaskListener() {
             @Override
@@ -111,6 +122,10 @@ public class CreateAccountActivity extends AppCompatActivity {
     }
 
     private void registerAccount() {
+        String bankCode = "";
+        if(bankCodeSelected != null) {
+            bankCode = bankCodeSelected.getBin();
+        }
         RegisterRequest request = new RegisterRequest(
                 edtUsername.getText().toString(),
                 edtPhoneNumber.getText().toString(),
@@ -119,7 +134,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                 edtAddress.getText().toString(),
                 edtWeLinkAcc.getText().toString(),
                 edtWeLinkPass.getText().toString(),
-                edtBankCode.getText().toString(),
+                bankCode,
                 edtSTK.getText().toString(),
                 edtSTKName.getText().toString(),
                 typeAccount.getText().toString().equals("Admin")? "admin" : "host"
@@ -146,52 +161,55 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     private boolean validate() {
         if(edtUsername.getText().toString().isEmpty()) {
-            edtUsername.setError("Vui lòng nhập tài khoản");
+            Toast.makeText(this, "Vui lòng nhập tài khoản", Toast.LENGTH_SHORT).show();
             return false;
         }
         if(edtPassword.getText().toString().isEmpty()) {
-            edtPassword.setError("Vui lòng nhập mật khẩu");
+            Toast.makeText(this, "Vui lòng nhập mật khẩu", Toast.LENGTH_SHORT).show();
             return false;
-        }
+        }else if (edtPassword.getText().toString().trim().length() < 6) {
+            Toast.makeText(this, "Mật khẩu phải có ít nhất 6 ký tự", Toast.LENGTH_SHORT).show();
+            return false;
+        };
 
         if(edtPhoneNumber.getText().toString().isEmpty()) {
-            edtPhoneNumber.setError("Vui lòng nhập số điện thoại");
+            Toast.makeText(this, "Vui lòng nhập số điện thoại", Toast.LENGTH_SHORT).show();
             return false;
         }
         if(edtFullname.getText().toString().isEmpty()) {
-            edtFullname.setError("Vui lòng nhập họ tên");
+            Toast.makeText(this, "Vui lòng nhập họ tên", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if(edtAddress.getText().toString().isEmpty()) {
-            edtAddress.setError("Vui lòng nhập địa chỉ");
+            Toast.makeText(this, "Vui lòng nhập địa chỉ", Toast.LENGTH_SHORT).show();
             return false;
         }
         if(edtWeLinkAcc.getText().toString().isEmpty()) {
-            edtWeLinkAcc.setError("Vui lòng nhập tài khoản weLink");
+            Toast.makeText(this, "Vui lòng nhập tài khoản weLink", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if(edtWeLinkPass.getText().toString().isEmpty()) {
-            edtWeLinkPass.setError("Vui lòng nhập mật khẩu weLink");
+            Toast.makeText(this, "Vui lòng nhập mật khẩu weLink", Toast.LENGTH_SHORT).show();
             return false;
         }
         if(edtBankCode.getText().toString().isEmpty()) {
-            edtBankCode.setError("Vui lòng chọn ngân hàng");
+            Toast.makeText(this, "Vui lòng chọn ngân hàng", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if(edtSTK.getText().toString().isEmpty()) {
-            edtSTK.setError("Vui lòng nhập số tài khoản");
+            Toast.makeText(this, "Vui lòng nhập số tài khoản", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if(edtSTKName.getText().toString().isEmpty()) {
-            edtSTKName.setError("Vui lòng nhập tên tài khoản");
+            Toast.makeText(this, "Vui lòng nhập tên tài khoản", Toast.LENGTH_SHORT).show();
             return false;
         }
         if(typeAccount.getText().toString().isEmpty()) {
-            typeAccount.setError("Vui lòng chọn loại tài khoản");
+            Toast.makeText(this, "Vui lòng chọn loại tài khoản", Toast.LENGTH_SHORT).show();
             return false;
         };
 

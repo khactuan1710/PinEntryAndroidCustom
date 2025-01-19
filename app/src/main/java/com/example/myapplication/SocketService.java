@@ -232,7 +232,7 @@ public class SocketService extends Service {
                         // Tạo đối tượng TransactionRequest
                         TransactionRequest transactionRequest = new TransactionRequest(
                                 transactionInfo.getOrderID(),
-                                Integer.parseInt(transactionInfo.getAmount().replace(".", "")),
+                                Integer.parseInt(transactionInfo.getAmount().replace(".", "").replace(",", "")),
                                 transactionInfo.getTransactionCode()
                         );
                         transactionRequest.setSmsFull(message);
@@ -242,6 +242,7 @@ public class SocketService extends Service {
                         TransactionRequest transactionRequest = new TransactionRequest();
                         transactionRequest.setSmsFull(message);
                         transactionRequest.setSender(sender);
+                        transactionRequest.setAmount(Integer.parseInt(transactionInfo.getAmount().replace(".", "").replace(",", "")));
 
                         new TransactionTask2().execute(transactionRequest);
                     }

@@ -1,7 +1,14 @@
 package com.example.myapplication.model;
 
-public class SimpleResult {
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
+
+public class SimpleResult implements Serializable {
+    @SerializedName("isSuccess")
     private boolean isSuccess;
+
+    @SerializedName("message")
     private String message;
 
     public boolean isSuccess() {

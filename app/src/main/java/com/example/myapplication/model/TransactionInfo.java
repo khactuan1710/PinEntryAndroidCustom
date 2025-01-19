@@ -6,6 +6,7 @@ public class TransactionInfo {
 
     private String orderID;
 
+
     public void setOrderID(String orderID) {
         this.orderID = orderID;
     }
@@ -15,6 +16,8 @@ public class TransactionInfo {
     public String getSmsFull() {
         return smsFull;
     }
+
+
 
     public void setSmsFull(String smsFull) {
         this.smsFull = smsFull;
@@ -29,6 +32,10 @@ public class TransactionInfo {
         this.amount = amount;
         this.transactionCode = transactionCode;
         this.orderID = orderId;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
     }
 
     public String getAmount() {
