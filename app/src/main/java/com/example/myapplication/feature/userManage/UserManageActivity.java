@@ -24,9 +24,11 @@ import com.example.myapplication.R;
 import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
 import com.example.myapplication.feature.createAccount.CreateAccountActivity;
+import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.SimpleResult;
 import com.example.myapplication.model.UpdateUserRequest;
 import com.example.myapplication.model.UserResponse;
+import com.example.myapplication.util.SharedPreferencesUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +57,10 @@ public class UserManageActivity extends AppCompatActivity {
         rcvUser = findViewById(R.id.rcv_user);
         ivBack = findViewById(R.id.iv_back);
         btnAddAccount = findViewById(R.id.btn_addAccount);
-        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-        token = sharedPreferences.getString("AUTH_TOKEN", "");
+        LoginResponse.Data userData = SharedPreferencesUtil.getUserData(this);
+        if (userData != null) {
+            token = userData.getToken();
+        }
 
         userList = new ArrayList<>();
 

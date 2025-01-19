@@ -1,6 +1,7 @@
 package com.example.myapplication.feature.createAccount;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -19,8 +20,10 @@ import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
 import com.example.myapplication.feature.userManage.UserManageActivity;
 import com.example.myapplication.model.BankCodeResponse;
+import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.RegisterRequest;
 import com.example.myapplication.model.SimpleResult;
+import com.example.myapplication.util.SharedPreferencesUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +45,11 @@ public class CreateAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_account);
-        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-        token = sharedPreferences.getString("AUTH_TOKEN", "");
+        getWindow().setStatusBarColor(Color.parseColor("#ff4b19"));
+        LoginResponse.Data userData = SharedPreferencesUtil.getUserData(this);
+        if (userData != null) {
+            token = userData.getToken();
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

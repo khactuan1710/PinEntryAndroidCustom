@@ -22,6 +22,8 @@ import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
 import com.example.myapplication.model.LoginRequest;
 import com.example.myapplication.model.LoginResponse;
+import com.example.myapplication.util.SharedPreferencesUtil;
+import com.google.gson.Gson;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -79,11 +81,8 @@ public class LoginActivity extends AppCompatActivity {
                                Toast.makeText(LoginActivity.this,
                                        apiResponse.getMessage(),
                                        Toast.LENGTH_LONG).show();
-                               SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-                               SharedPreferences.Editor editor = sharedPreferences.edit();
-                               editor.putString("AUTH_TOKEN", apiResponse.getData().getToken());
-                               editor.putString("FULL_NAME", apiResponse.getData().getFullName());
-                               editor.apply(); // Lưu thay đổi
+                               SharedPreferencesUtil.saveUserData(LoginActivity.this, apiResponse.getData());
+
 
                                // Điều hướng sang màn hình Home
                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);

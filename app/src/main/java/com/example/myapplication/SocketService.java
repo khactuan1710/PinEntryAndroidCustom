@@ -23,9 +23,11 @@ import androidx.core.app.NotificationCompat;
 import com.example.myapplication.R;
 import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
+import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.TransactionInfo;
 import com.example.myapplication.model.TransactionRequest;
 import com.example.myapplication.model.TransactionResponse;
+import com.example.myapplication.util.SharedPreferencesUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -225,24 +227,11 @@ public class SocketService extends Service {
                 try {
                     TransactionInfo transactionInfo = parseMessage(message);
 
-                    Pattern pattern = Pattern.compile("(?<=\\s)[a-zA-Z0-9]{10}$");
-                    Matcher matcher = pattern.matcher(transactionInfo.getTransactionCode());
-
-                    String orderId= "";
-                    if (matcher.find()) {
-                        orderId = matcher.group(0);
-                    }
-
-//                showToast("ket noi thanh cong");
                     if (transactionInfo.getOrderID() != null && !transactionInfo.getOrderID().isEmpty()) {
-
-                        // Khởi tạo Retrofit
-                        ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
-
 
                         // Tạo đối tượng TransactionRequest
                         TransactionRequest transactionRequest = new TransactionRequest(
-                                orderId,
+                                transactionInfo.getOrderID(),
                                 Integer.parseInt(transactionInfo.getAmount().replace(".", "")),
                                 transactionInfo.getTransactionCode()
                         );
@@ -281,8 +270,13 @@ public class SocketService extends Service {
         protected TransactionResponse doInBackground(TransactionRequest... transactionRequests) {
             ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
 
-            SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-            String token = sharedPreferences.getString("AUTH_TOKEN", "");  // Lấy token
+            String token = "";
+
+            LoginResponse.Data userData = SharedPreferencesUtil.getUserData(getApplicationContext());
+            if (userData != null) {
+                token = userData.getToken();
+            }
+
 //            Toast.makeText(getApplicationContext(), token, Toast.LENGTH_SHORT).show();
 //            Toast.makeText(getApplicationContext(), "token", Toast.LENGTH_SHORT).show();
 //            Log.d("VVVVV", token);
@@ -326,8 +320,13 @@ public class SocketService extends Service {
         protected TransactionResponse doInBackground(TransactionRequest... transactionRequests) {
             ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
 
-            SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-            String token = sharedPreferences.getString("AUTH_TOKEN", "");  // Lấy token
+            String token = "";
+
+            LoginResponse.Data userData = SharedPreferencesUtil.getUserData(getApplicationContext());
+            if (userData != null) {
+                token = userData.getToken();
+            }
+
             TransactionRequest transactionRequest = transactionRequests[0];
 
             Call<TransactionResponse> call = apiService.createTransaction("Bearer " + token, transactionRequest);
@@ -384,9 +383,7 @@ public class SocketService extends Service {
 
     public TransactionInfo parseMessage(String message) {
         // Biểu thức chính quy để tìm số tiền và mã giao dịch
-        String regex = "\\+([0-9,.]+)\\sVND.*ND:\\s(.*)";
-
-
+        String regex = "\\+([0-9,.]+)\\sVND";
         // Compile biểu thức chính quy
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(message);
@@ -399,15 +396,16 @@ public class SocketService extends Service {
         // Kiểm tra và lấy kết quả
         if (matcher.find()) {
             String amount = matcher.group(1);  // Số tiền
-            String transactionCode = matcher.group(2);  // Mã giao dịch
 
             String orderid = "";
             if(matcher2.find()) {
+                String transactionCode = matcher2.group(0);  // Mã giao dịch
                 orderid = matcher2.group(3);
+                return new TransactionInfo(amount, transactionCode, orderid);
             }
+            return null;
 
             // Trả về đối tượng TransactionInfo chứa số tiền và mã giao dịch
-            return new TransactionInfo(amount, transactionCode, orderid);
         } else {
             // Xử lý nếu không tìm thấy dữ liệu
 //            Toast.makeText(getApplicationContext(), "Không tìm thấy thông tin giao dịch.", Toast.LENGTH_SHORT).show();

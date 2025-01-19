@@ -46,7 +46,7 @@ public class BankCodeAdapter extends RecyclerView.Adapter<BankCodeAdapter.BankCo
     public void onBindViewHolder(@NonNull BankCodeViewHolder holder, int position) {
         BankCodeResponse.BankCode bankCode = bankCodeList.get(position);
         holder.tvFullName.setText(bankCode.getName());
-        holder.tvShortName.setText(bankCode.getShort_name());
+        holder.tvBankCode.setText(bankCode.getShort_name());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,15 +69,15 @@ public class BankCodeAdapter extends RecyclerView.Adapter<BankCodeAdapter.BankCo
     }
 
     public static class BankCodeViewHolder extends RecyclerView.ViewHolder {
+        TextView tvBankCode;
         TextView tvFullName;
-        TextView tvShortName;
         ImageView ivLogo;
 
         public BankCodeViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvFullName = itemView.findViewById(R.id.tv_username);
-            tvShortName = itemView.findViewById(R.id.tv_phone_number);
-            ivLogo = itemView.findViewById(R.id.tv_status_active);
+            tvBankCode = itemView.findViewById(R.id.tvBankCode);
+            tvFullName = itemView.findViewById(R.id.tv_full_name);
+            ivLogo = itemView.findViewById(R.id.ivLogo);
         }
     }
 }

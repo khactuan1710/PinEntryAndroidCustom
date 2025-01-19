@@ -53,7 +53,7 @@ public class LoginResponse {
         }
 
         public String getType() {
-            return type;
+            return type == null? "": type;
         }
 
         public void setType(String type) {

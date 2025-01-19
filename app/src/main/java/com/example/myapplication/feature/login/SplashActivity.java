@@ -14,6 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.model.LoginResponse;
+import com.example.myapplication.util.SharedPreferencesUtil;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -31,11 +33,14 @@ public class SplashActivity extends AppCompatActivity {
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             // Kiểm tra token trong SharedPreferences
-            SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-            String token = sharedPreferences.getString("AUTH_TOKEN", "");
+            String token = "";
+            LoginResponse.Data userData = SharedPreferencesUtil.getUserData(this);
+            if (userData != null) {
+                token = userData.getToken();
+            }
 
             Intent intent;
-            if (token != null) {
+            if (token != null && !token.isEmpty()) {
                 // Nếu token tồn tại, chuyển sang màn hình Home
                 intent = new Intent(SplashActivity.this, MainActivity.class);
             } else {

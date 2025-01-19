@@ -42,6 +42,7 @@
         app:hint="Nhập mật khẩu*"
         android:layout_marginTop="12dp"
         app:inputType="password"
+        app:imeOptions="actionDone"
         />
 
     <androidx.appcompat.widget.AppCompatButton

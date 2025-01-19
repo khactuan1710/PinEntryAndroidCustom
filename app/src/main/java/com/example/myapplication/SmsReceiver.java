@@ -19,31 +19,25 @@ public class SmsReceiver extends BroadcastReceiver {
             if (bundle != null) {
                 Object[] pdus = (Object[]) bundle.get("pdus");
                 if (pdus != null) {
+                    StringBuilder fullMessage = new StringBuilder(); // Dùng để ghép các đoạn tin nhắn
+                    String sender = null;
+
                     for (Object pdu : pdus) {
                         SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdu);
-                        String sender = smsMessage.getDisplayOriginatingAddress();
-                        String messageBody = smsMessage.getMessageBody();
-
-//                        Toast.makeText(context, "SMS từ: " + sender + "\nNội dung: " + messageBody, Toast.LENGTH_LONG).show();
-//                        Log.e("f", "SMS từ: " + sender + "\nNội dung: "+ messageBody);
-
-                        Intent serviceIntent = new Intent(context, SocketService.class);
-                        serviceIntent.putExtra("sender", sender);
-                        serviceIntent.putExtra("message", messageBody);
-                        context.startService(serviceIntent);
-
-//                        Intent broadcastIntent = new Intent("com.example.SMS_RECEIVED");
-//                        broadcastIntent.putExtra("sender", sender);
-//                        broadcastIntent.putExtra("message", messageBody);
-//                        context.sendBroadcast(broadcastIntent);
-
-//                        Intent serviceIntent = new Intent(context, ApiService2.class);
-//                        serviceIntent.putExtra("sender", sender);
-//                        serviceIntent.putExtra("message", messageBody);
-//                        context.startService(serviceIntent);
-//                        showToast(context, "bbbbb.");
-
+                        if (sender == null) {
+                            sender = smsMessage.getDisplayOriginatingAddress();
+                        }
+                        fullMessage.append(smsMessage.getMessageBody());
                     }
+
+                    // Tin nhắn đầy đủ sau khi ghép
+                    String messageBody = fullMessage.toString();
+
+                    // Gửi đến service hoặc xử lý tiếp
+                    Intent serviceIntent = new Intent(context, SocketService.class);
+                    serviceIntent.putExtra("sender", sender);
+                    serviceIntent.putExtra("message", messageBody);
+                    context.startService(serviceIntent);
                 }
             }
         }

@@ -269,6 +269,7 @@ public class CustomEditText extends ConstraintLayout {
                 break;
             case 2: // InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
                 editText.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                 break;
             case 3: // InputType.TYPE_TEXT_VARIATION_PASSWORD
                 editText.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);

@@ -33,8 +33,10 @@ import com.example.myapplication.feature.login.LoginActivity;
 import com.example.myapplication.model.ApiResponse;
 import com.example.myapplication.model.DeviceRequest;
 import com.example.myapplication.model.DeviceResponse;
+import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.TransactionInfo;
 import com.example.myapplication.feature.userManage.UserManageActivity;
+import com.example.myapplication.util.SharedPreferencesUtil;
 import com.example.myapplication.webview.WebViewActivity;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
@@ -79,9 +81,11 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.parseColor("#ff4b19"));
         Activity activity = this;
         apiService = RetrofitClient.getInstance().create(ApiService.class);
-        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-        token = sharedPreferences.getString("AUTH_TOKEN", "");
-        fullname = sharedPreferences.getString("FULL_NAME", "");
+        LoginResponse.Data userData = SharedPreferencesUtil.getUserData(this);
+        if (userData != null) {
+            token = userData.getToken();
+            fullname = userData.getFullName();
+        }
         tvFullName = findViewById(R.id.tv_full_name);
         buttonUserManage = findViewById(R.id.btn_user_manage);
 
@@ -109,12 +113,7 @@ public class MainActivity extends AppCompatActivity {
                     .setTitle("Đăng xuất")
                     .setMessage("Bạn có chắc chắn muốn đăng xuất không?")
                     .setPositiveButton("Đồng ý", (dialog, which) -> {
-                        // Xóa token trong SharedPreferences
-                        SharedPreferences sharedPreferences2 = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences2.edit();
-                        editor.putString("AUTH_TOKEN", null);
-                        editor.apply();
-
+                        SharedPreferencesUtil.clearUserData(MainActivity.this);
                         // Điều hướng sang màn hình login
                         Intent intent = new Intent(this, LoginActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -146,6 +145,11 @@ public class MainActivity extends AppCompatActivity {
         Intent intent22 = new Intent(activity, SocketService.class);
         activity.startService(intent22);
 
+        if (userData != null && !userData.getType().equals("admin")) {
+            buttonUserManage.setVisibility(View.GONE);
+        }else if(userData == null) {
+            buttonUserManage.setVisibility(View.GONE);
+        }
         buttonUserManage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
