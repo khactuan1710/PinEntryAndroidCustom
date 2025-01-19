@@ -83,6 +83,7 @@
                 android:layout_height="wrap_content"
                 app:hint="Tên thiết bị (m001, m002...)"
                 app:inputType="text"
+                app:maxLength="4"
                 android:layout_marginTop="12dp"
                 android:layout_marginHorizontal="12dp"
                 />
@@ -100,7 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:hint="Id thiết bị"
-                app:inputType="number"
+                app:inputType="text"
                 android:layout_marginTop="8dp"
                 android:layout_marginHorizontal="12dp"
                 />

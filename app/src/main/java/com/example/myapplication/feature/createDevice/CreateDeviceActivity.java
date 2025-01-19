@@ -240,6 +240,10 @@ public class CreateDeviceActivity extends AppCompatActivity {
             Toast.makeText(this, "Vui lòng chọn dịch vụ", Toast.LENGTH_SHORT).show();
             return false;
         }
+        if (listService.isEmpty()) {
+            Toast.makeText(this, "Vui lòng chọn dịch vụ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         return true;
     }
 }
