@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         app:hint="Nhập tài khoản*"
-        app:inputType="text"
+        app:inputType="number"
         />
 
     <com.example.myapplication.CustomView.CustomEditText
