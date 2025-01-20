@@ -12,6 +12,7 @@ import com.example.myapplication.model.RegisterRequest;
 import com.example.myapplication.model.SimpleResult;
 import com.example.myapplication.model.TransactionRequest;
 import com.example.myapplication.model.TransactionResponse;
+import com.example.myapplication.model.UpdateDeviceRequest;
 import com.example.myapplication.model.UpdateUserRequest;
 import com.example.myapplication.model.UserResponse;
 
@@ -24,6 +25,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
 
@@ -73,7 +75,7 @@ public interface ApiService {
     @GET("/devices")
     Call<DeviceResponse> getDevicesByHost(
             @Header("Authorization") String authToken,  // Token để xác thực
-            @retrofit2.http.Query("hostID") String hostID // Query parameter: hostID
+            @Query("hostID") String hostID
     );
 
     @POST("/change-password")
@@ -81,6 +83,14 @@ public interface ApiService {
             @Header("Authorization") String token,      // Token để xác thực
             @Body ChangePasswordRequest changePasswordRequest // Dữ liệu yêu cầu
     );
+
+    @PUT("/devices/{deviceID}")
+    Call<SimpleResult> updateDevice(
+            @Header("Authorization") String token,  // Token xác thực
+            @Path("deviceID") String deviceID,      // ID của thiết bị cần cập nhật
+            @Body UpdateDeviceRequest updateDeviceRequest // Dữ liệu yêu cầu cập nhật
+    );
+
 
 
 }

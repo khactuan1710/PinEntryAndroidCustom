@@ -1,5 +1,6 @@
 package com.example.myapplication.feature.createAccount;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -35,7 +36,7 @@ import retrofit2.Response;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
-    CustomEditText edtUsername, edtPassword, edtPhoneNumber, edtFullname, edtAddress, edtWeLinkAcc, edtWeLinkPass, edtBankCode, edtSTK, edtSTKName, typeAccount;
+    CustomEditText edtUsername, edtPassword, edtPhoneNumber, edtFullname, edtAddress, edtPercent , edtWeLinkAcc, edtWeLinkPass, edtBankCode, edtSTK, edtSTKName, typeAccount;
     ApiService apiService;
     ImageView ivBack, ivReload;
     AppCompatButton btnAddAccount;
@@ -43,6 +44,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     private String token;
     BankCodeResponse.BankCode bankCodeSelected;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +74,10 @@ public class CreateAccountActivity extends AppCompatActivity {
         typeAccount = findViewById(R.id.typeAccount);
         btnAddAccount = findViewById(R.id.btn_addAccount);
         ivBack = findViewById(R.id.iv_back);
+        edtPercent = findViewById(R.id.edt_percent);
+
+        edtWeLinkAcc.setText("khachuong.vn@gmail.com");
+        edtWeLinkPass.setText("devup@2023");
 
         apiService = RetrofitClient.getInstance().create(ApiService.class);
         getBankCodes();
@@ -127,12 +133,15 @@ public class CreateAccountActivity extends AppCompatActivity {
         if(bankCodeSelected != null) {
             bankCode = bankCodeSelected.getBin();
         }
+        float percent = Float.parseFloat(edtPercent.getText().toString()) / 100; // Chuyển sang float và chia 100
+
         RegisterRequest request = new RegisterRequest(
-                edtUsername.getText().toString(),
+                edtPhoneNumber.getText().toString(),
                 edtPhoneNumber.getText().toString(),
                 edtPassword.getText().toString(),
                 edtFullname.getText().toString(),
                 edtAddress.getText().toString(),
+                percent,
                 edtWeLinkAcc.getText().toString(),
                 edtWeLinkPass.getText().toString(),
                 bankCode,
@@ -161,10 +170,6 @@ public class CreateAccountActivity extends AppCompatActivity {
     }
 
     private boolean validate() {
-        if(edtUsername.getText().toString().isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập tài khoản", Toast.LENGTH_SHORT).show();
-            return false;
-        }
         if(edtPassword.getText().toString().isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập mật khẩu", Toast.LENGTH_SHORT).show();
             return false;
@@ -184,6 +189,11 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         if(edtAddress.getText().toString().isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập địa chỉ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if(Float.parseFloat(edtPercent.getText().toString()) <= 0 || Float.parseFloat(edtPercent.getText().toString()) > 100) {
+            Toast.makeText(this, "% trích lại/giao dịch phải trong khoản 0 -> 100", Toast.LENGTH_SHORT).show();
             return false;
         }
         if(edtWeLinkAcc.getText().toString().isEmpty()) {

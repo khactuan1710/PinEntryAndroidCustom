@@ -42,7 +42,7 @@ public class SelectUserAdapter extends RecyclerView.Adapter<SelectUserAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UserResponse.User user = userList.get(position);
-        holder.tvUserName.setText(user.getFullName());
+        holder.tvUserName.setText(user.getFullName() + " - " + user.getPhoneNumber());
         holder.tvAdress.setText(user.getAddress());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

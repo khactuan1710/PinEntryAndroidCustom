@@ -1,9 +1,15 @@
 package com.example.myapplication.feature.createDevice;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -11,6 +17,8 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -30,6 +38,10 @@ import com.example.myapplication.model.Service;
 import com.example.myapplication.model.SimpleResult;
 import com.example.myapplication.model.UserResponse;
 import com.example.myapplication.util.SharedPreferencesUtil;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +64,12 @@ public class CreateDeviceActivity extends AppCompatActivity {
     RecyclerView rcv_data;
 
     TextView tvCount;
+    LinearLayout lnlInfo, lnlQR;
     private SelectServiceAdapter selectServiceAdapter;
     private List<Service> listService;
+    Bitmap bitmap;
+    private AppCompatButton btnDownQR;
+    private ImageView imgQR;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -87,6 +103,10 @@ public class CreateDeviceActivity extends AppCompatActivity {
         btnAddDevice = findViewById(R.id.btn_addDevice);
         rcv_data = findViewById(R.id.rcv_data);
         tvCount = findViewById(R.id.tv_count);
+        lnlInfo = findViewById(R.id.lnl_info);
+        lnlQR = findViewById(R.id.lnl_qr);
+        imgQR = findViewById(R.id.img_qr);
+        btnDownQR = findViewById(R.id.btn_download_qr);
 
 
         selectServiceAdapter = new SelectServiceAdapter(this, listService);
@@ -153,6 +173,16 @@ public class CreateDeviceActivity extends AppCompatActivity {
             }
         });
 
+        btnDownQR.setOnClickListener(v -> {
+            // Kiểm tra quyền lưu trữ
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                saveQRCodeToGallery(bitmap);
+            } else {
+                // Yêu cầu quyền nếu chưa có
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            }
+        });
+
     }
 
     private void getListUser() {
@@ -202,7 +232,11 @@ public class CreateDeviceActivity extends AppCompatActivity {
             public void onResponse(Call<SimpleResult> call, Response<SimpleResult> response) {
                 if(response.isSuccessful() && response.body() != null) {
                     Toast.makeText(CreateDeviceActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    finish();
+                    lnlInfo.setVisibility(View.GONE);
+                    lnlQR.setVisibility(View.VISIBLE);
+
+                    initQR();
+//                    finish();
                 }else {
                     Toast.makeText(CreateDeviceActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -213,6 +247,56 @@ public class CreateDeviceActivity extends AppCompatActivity {
                 t.printStackTrace();
             }
         });
+    }
+
+    private void initQR() {
+        String url = "https://iot.mimi.sg/?maMayGiat=" + edtDeviceName.getText();  // Chuỗi URL với tên máy giặt
+
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        try {
+            BitMatrix bitMatrix = qrCodeWriter.encode(url, BarcodeFormat.QR_CODE, 512, 512);
+
+            // Bước 2: Chuyển đổi BitMatrix thành Bitmap
+            bitmap = Bitmap.createBitmap(512, 512, Bitmap.Config.RGB_565);
+            for (int x = 0; x < 512; x++) {
+                for (int y = 0; y < 512; y++) {
+                    bitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                }
+            }
+
+            // Bước 3: Hiển thị mã QR lên ImageView
+            imgQR.setImageBitmap(bitmap);
+
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void saveQRCodeToGallery(Bitmap bitmap) {
+        // Tạo tên cho ảnh
+        String fileName = "QRCode_" + System.currentTimeMillis() + ".png";
+
+        // Lưu ảnh vào bộ nhớ
+        try {
+            // Lưu ảnh vào thư viện
+            String savedImageURL = MediaStore.Images.Media.insertImage(
+                    getContentResolver(),
+                    bitmap,
+                    fileName,
+                    "QR Code Image"
+            );
+
+            // Kiểm tra nếu ảnh đã được lưu
+            if (savedImageURL != null) {
+                Toast.makeText(this, "QR máy giặt đã được tải về thư viện ảnh", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Failed to save QR Code", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error saving QR Code", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private boolean validate() {

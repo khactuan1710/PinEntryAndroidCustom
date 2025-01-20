@@ -28,11 +28,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.adapter.DeviceAdapter;
+import com.example.myapplication.adapter.DeviceDetailActivity;
 import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
 import com.example.myapplication.feature.createAccount.CreateAccountActivity;
 import com.example.myapplication.feature.createDevice.CreateDeviceActivity;
 import com.example.myapplication.feature.login.LoginActivity;
+import com.example.myapplication.feature.userDetail.UserDetailActivity;
 import com.example.myapplication.model.ApiResponse;
 import com.example.myapplication.model.DeviceRequest;
 import com.example.myapplication.model.DeviceResponse;
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private DeviceAdapter deviceAdapter;
     private ApiService apiService;
 
-
+    LoginResponse.Data userData;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.parseColor("#ff4b19"));
         Activity activity = this;
         apiService = RetrofitClient.getInstance().create(ApiService.class);
-        LoginResponse.Data userData = SharedPreferencesUtil.getUserData(this);
+        userData = SharedPreferencesUtil.getUserData(this);
         if (userData != null) {
             token = userData.getToken();
             fullname = userData.getFullName();
@@ -146,6 +148,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(String deviceId, int isOnOff) {
                 callAPIOnOff(isOnOff, deviceId, apiService);
             }
+
+            @Override
+            public void onDetail(DeviceResponse.Device device) {
+                    Intent intent = new Intent(MainActivity.this, DeviceDetailActivity.class);
+                    intent.putExtra("DEVICE_DATA", device); // Truyền đối tượng user
+                    startActivityForResult(intent, 777);
+            }
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -202,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     DeviceResponse apiResponse = response.body();
                     if(apiResponse.isSuccess()) {
+                        deviceList.clear();
                         deviceList.addAll(apiResponse.getData());
                         deviceAdapter.notifyDataSetChanged();
                     }else {

@@ -65,86 +65,129 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
             android:orientation="vertical">
-            <com.example.myapplication.CustomView.CustomEditText
-                android:id="@+id/tv_owner"
+            <LinearLayout
+                android:id="@+id/lnl_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:hint="Chọn chủ trọ"
-                app:showClearButton="false"
-                app:clickViewEnable="true"
-                app:endIcon="@drawable/arrow_drop_down_address"
-                app:inputType="text"
-                android:layout_marginTop="8dp"
-                android:layout_marginHorizontal="12dp"
-                />
-            <com.example.myapplication.CustomView.CustomEditText
-                android:id="@+id/edtDeviceName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hint="Tên thiết bị (m001, m002...)"
-                app:inputType="text"
-                app:maxLength="4"
-                android:layout_marginTop="12dp"
-                android:layout_marginHorizontal="12dp"
-                />
-            <com.example.myapplication.CustomView.CustomEditText
-                android:id="@+id/edtDeviceFullName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hint="Tên hiển thị (Máy giặt 03...)"
-                app:inputType="text"
-                android:layout_marginTop="8dp"
-                android:layout_marginHorizontal="12dp"
-                />
-            <com.example.myapplication.CustomView.CustomEditText
-                android:id="@+id/edtIdDevice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hint="Id thiết bị"
-                app:inputType="text"
-                android:layout_marginTop="8dp"
-                android:layout_marginHorizontal="12dp"
-                />
-            <com.example.myapplication.CustomView.CustomEditText
-                android:id="@+id/edtDeviceType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hint="Loại thiết bị (Sonoff Basic R2...)"
-                app:inputType="text"
-                app:imeOptions="actionDone"
-                android:layout_marginTop="8dp"
-                android:layout_marginHorizontal="12dp"
-                />
-            <com.example.myapplication.CustomView.CustomEditText
-                android:id="@+id/edtMachineType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hint="Chọn dịch vụ"
-                app:inputType="text"
-                app:showClearButton="false"
-                app:clickViewEnable="true"
-                app:endIcon="@drawable/arrow_drop_down_address"
-                android:layout_marginTop="8dp"
-                android:layout_marginHorizontal="12dp"
-                />
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_count"
-                android:layout_marginTop="12dp"
-                android:layout_marginStart="12dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="Số dịch vụ đã thêm: 0"
-                android:textColor="@color/color_44494D"
-                android:textSize="14sp" />
+                android:visibility="visible"
+                android:orientation="vertical">
+                <com.example.myapplication.CustomView.CustomEditText
+                    android:id="@+id/tv_owner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="Chọn chủ trọ"
+                    app:showClearButton="false"
+                    app:clickViewEnable="true"
+                    app:endIcon="@drawable/arrow_drop_down_address"
+                    app:inputType="text"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="12dp"
+                    />
+                <com.example.myapplication.CustomView.CustomEditText
+                    android:id="@+id/edtDeviceName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="Tên thiết bị (m001, m002...)"
+                    app:inputType="text"
+                    app:maxLength="4"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginHorizontal="12dp"
+                    />
+                <com.example.myapplication.CustomView.CustomEditText
+                    android:id="@+id/edtDeviceFullName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="Tên hiển thị (Máy giặt 03...)"
+                    app:inputType="text"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="12dp"
+                    />
+                <com.example.myapplication.CustomView.CustomEditText
+                    android:id="@+id/edtIdDevice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="Id thiết bị"
+                    app:inputType="text"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="12dp"
+                    />
+                <com.example.myapplication.CustomView.CustomEditText
+                    android:id="@+id/edtDeviceType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="Loại thiết bị (Sonoff Basic R2...)"
+                    app:inputType="text"
+                    app:imeOptions="actionDone"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="12dp"
+                    />
+                <com.example.myapplication.CustomView.CustomEditText
+                    android:id="@+id/edtMachineType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="Chọn dịch vụ"
+                    app:inputType="text"
+                    app:showClearButton="false"
+                    app:clickViewEnable="true"
+                    app:endIcon="@drawable/arrow_drop_down_address"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="12dp"
+                    />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_count"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="Số dịch vụ đã thêm: 0"
+                    android:textColor="@color/color_44494D"
+                    android:textSize="14sp" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rcv_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    tools:listitem="@layout/item_service_selected"/>
+            </LinearLayout>
 
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcv_data"
+            <LinearLayout
+                android:id="@+id/lnl_qr"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                tools:listitem="@layout/item_service_selected"/>
+                android:orientation="vertical">
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:textSize="18sp"
+                    android:text="Ảnh QR thiết bị"/>
+                <ImageView
+                    android:layout_marginTop="12dp"
+                    android:id="@+id/img_qr"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_download_qr"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginHorizontal="12dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/bg_default_button_2"
+                    android:gravity="center"
+                    android:text="Tải QR máy giặt"
+                    android:textAllCaps="false"
+                    android:textColor="@color/color_282828"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

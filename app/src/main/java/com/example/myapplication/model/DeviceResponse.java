@@ -1,5 +1,6 @@
 package com.example.myapplication.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class DeviceResponse {
@@ -32,7 +33,7 @@ public class DeviceResponse {
         this.message = message;
     }
 
-    public static class Device {
+    public static class Device implements Serializable {
         private String deviceID;
         private String currentStatus;
         private String deviceName;

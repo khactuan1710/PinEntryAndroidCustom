@@ -12,15 +12,17 @@ public class RegisterRequest {
     private final String bankAccountNumber;
     private final String bankAccountName;
     private final String type;
+    private final float percentAppDeducted;
 
     public RegisterRequest(String username, String phoneNumber, String password, String fullName, String address,
-                           String eWeLinkAccount, String eWeLinkPassword, String bankCode,
+                           float percentAppDeducted, String eWeLinkAccount, String eWeLinkPassword, String bankCode,
                            String bankAccountNumber, String bankAccountName, String type) {
         this.username = username;
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.fullName = fullName;
         this.address = address;
+        this.percentAppDeducted = percentAppDeducted;
         this.eWeLinkAccount = eWeLinkAccount;
         this.eWeLinkPassword = eWeLinkPassword;
         this.bankCode = bankCode;

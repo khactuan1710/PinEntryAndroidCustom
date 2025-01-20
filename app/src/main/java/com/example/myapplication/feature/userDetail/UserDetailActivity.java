@@ -23,8 +23,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.adapter.DeviceAdapter;
+import com.example.myapplication.adapter.DeviceDetailActivity;
 import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
+import com.example.myapplication.feature.userManage.UserManageActivity;
 import com.example.myapplication.model.ApiResponse;
 import com.example.myapplication.model.DeviceRequest;
 import com.example.myapplication.model.DeviceResponse;
@@ -93,6 +95,13 @@ public class UserDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(String deviceId, int isOnOff) {
                 callAPIOnOff(isOnOff, deviceId, apiService);
+            }
+
+            @Override
+            public void onDetail(DeviceResponse.Device device) {
+                    Intent intent = new Intent(UserDetailActivity.this, DeviceDetailActivity.class);
+                    intent.putExtra("DEVICE_DATA", device); // Truyền đối tượng user
+                    startActivity(intent);
             }
         });
 
