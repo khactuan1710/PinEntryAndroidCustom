@@ -31,7 +31,7 @@ public class UserResponse {
 
         // Getters and Setters
         public String getId() {
-            return _id;
+            return _id == null? "": _id;
         }
 
         public String getAddress() {

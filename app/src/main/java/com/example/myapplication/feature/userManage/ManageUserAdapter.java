@@ -29,6 +29,8 @@ public class ManageUserAdapter extends RecyclerView.Adapter<ManageUserAdapter.De
     public interface ItemClick{
         void onClick(UserResponse.User user);
         void onEdit(UserResponse.User user);
+
+        void onChangePass(UserResponse.User user);
     }
 
     public void setItemClick(ItemClick itemClick) {
@@ -68,6 +70,12 @@ public class ManageUserAdapter extends RecyclerView.Adapter<ManageUserAdapter.De
                 itemClick.onClick(user);
             }
         });
+        holder.ivChangePass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemClick.onChangePass(user);
+            }
+        });
     }
 
     @Override
@@ -81,6 +89,7 @@ public class ManageUserAdapter extends RecyclerView.Adapter<ManageUserAdapter.De
         TextView tvStatusActive;
         TextView tvAddress;
         ImageView ivEditUser;
+        ImageView ivChangePass;
 
         public DeviceViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -89,6 +98,7 @@ public class ManageUserAdapter extends RecyclerView.Adapter<ManageUserAdapter.De
             tvStatusActive = itemView.findViewById(R.id.tv_status_active);
             tvAddress = itemView.findViewById(R.id.tv_address);
             ivEditUser = itemView.findViewById(R.id.tv_edit_user);
+            ivChangePass = itemView.findViewById(R.id.tv_change_password);
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.myapplication.api;
 
 import com.example.myapplication.model.ApiResponse;
 import com.example.myapplication.model.BankCodeResponse;
+import com.example.myapplication.model.ChangePasswordRequest;
 import com.example.myapplication.model.CreateDeviceRequest;
 import com.example.myapplication.model.DeviceRequest;
 import com.example.myapplication.model.DeviceResponse;
@@ -73,6 +74,12 @@ public interface ApiService {
     Call<DeviceResponse> getDevicesByHost(
             @Header("Authorization") String authToken,  // Token để xác thực
             @retrofit2.http.Query("hostID") String hostID // Query parameter: hostID
+    );
+
+    @POST("/change-password")
+    Call<SimpleResult> changePassword(
+            @Header("Authorization") String token,      // Token để xác thực
+            @Body ChangePasswordRequest changePasswordRequest // Dữ liệu yêu cầu
     );
 
 

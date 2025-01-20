@@ -25,6 +25,7 @@ import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
 import com.example.myapplication.feature.createAccount.CreateAccountActivity;
 import com.example.myapplication.feature.userDetail.UserDetailActivity;
+import com.example.myapplication.model.ChangePasswordRequest;
 import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.SimpleResult;
 import com.example.myapplication.model.UpdateUserRequest;
@@ -83,6 +84,15 @@ public class UserManageActivity extends AppCompatActivity {
                 });
                 dialogFragment.show(getSupportFragmentManager(), "EditUserDialogFragment");
             }
+
+            @Override
+            public void onChangePass(UserResponse.User user) {
+                ChangePassUserDialogFragment dialogFragment = ChangePassUserDialogFragment.newInstance(user);
+                dialogFragment.setOnUserUpdatedListener(newpass -> {
+                    changePass(newpass, user.getId());
+                });
+                dialogFragment.show(getSupportFragmentManager(), "ChangePassUserDialogFragment");
+            }
         });
 
         rcvUser.setLayoutManager(new LinearLayoutManager(this));
@@ -136,6 +146,29 @@ public class UserManageActivity extends AppCompatActivity {
                                 apiResponse.getMessage(),
                                 Toast.LENGTH_LONG).show();
                     }
+                } else {
+                    Toast.makeText(UserManageActivity.this, "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SimpleResult> call, Throwable t) {
+                Toast.makeText(UserManageActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void changePass(String newpass, String userId) {
+        ChangePasswordRequest request = new ChangePasswordRequest(userId, newpass);
+
+
+        Call<SimpleResult> call = apiService.changePassword("Bearer " + token, request);
+
+        call.enqueue(new Callback<SimpleResult>() {
+            @Override
+            public void onResponse(@NonNull Call<SimpleResult> call, @NonNull Response<SimpleResult> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(UserManageActivity.this, "Đổi mật khẩu thành công", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(UserManageActivity.this, "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
                 }
