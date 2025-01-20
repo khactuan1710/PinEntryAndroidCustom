@@ -186,7 +186,7 @@ public class CreateDeviceActivity extends AppCompatActivity {
 
         CreateDeviceRequest deviceRequest = new CreateDeviceRequest(
                 userSelected.getId(),
-                edtOwner.getText().toString(),
+                edtDeviceName.getText().toString(),
                 edtDeviceFullName.getText().toString(),
                 edtIdDevice.getText().toString(),
                 edtDeviceType.getText().toString(),

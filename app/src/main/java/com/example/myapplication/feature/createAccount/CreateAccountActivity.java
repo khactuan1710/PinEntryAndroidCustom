@@ -105,6 +105,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                     @Override
                     public void onChoose(BankCodeResponse.BankCode bankCode) {
                         edtBankCode.setText(bankCode.getName());
+                        bankCodeSelected = bankCode;
                     }
                 });
             }

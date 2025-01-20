@@ -63,8 +63,8 @@
         android:layout_height="wrap_content"
         tools:listitem="@layout/item_user"
         android:layout_below="@id/header"
+        android:layout_above="@id/btn_addAccount"
         tools:itemCount="5"
-        android:layout_marginBottom="8dp"
         android:layout_marginTop="10dp"/>
 
     <androidx.appcompat.widget.AppCompatButton
