@@ -1,6 +1,7 @@
 package com.example.myapplication.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DeviceResponse {
@@ -39,6 +40,10 @@ public class DeviceResponse {
         private String deviceName;
         private String deviceFullName;
         private String userID;
+        private String deviceType;
+        private String machineType;
+        private Float percentAppDeducted;
+        private List<Service> services;
 
         public String getUserID() {
             return userID == null ? "" : userID;
@@ -52,6 +57,27 @@ public class DeviceResponse {
             return deviceFullName == null ? "" : deviceFullName;
         }
 
+        public List<Service> getServices() {
+            return services == null ? new ArrayList<>() : services;
+        }
+
+        public String getMachineType() {
+            return machineType == null ? "" : machineType;
+        }
+
+        public String getDeviceType() {
+            return deviceType == null ? "" : deviceType;
+        }
+
+        public String getDeviceID() {
+            return deviceID == null ? "" : deviceID;
+        }
+
+        public Float getPercentAppDeducted() {
+
+            return percentAppDeducted;
+
+        }
         public void setDeviceId(String deviceId) {
             this.deviceID = deviceId;
         }

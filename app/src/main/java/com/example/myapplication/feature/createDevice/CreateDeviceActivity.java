@@ -2,9 +2,15 @@ package com.example.myapplication.feature.createDevice;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -17,7 +23,10 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -52,7 +61,7 @@ import retrofit2.Response;
 
 public class CreateDeviceActivity extends AppCompatActivity {
 
-    CustomEditText edtOwner, edtDeviceName, edtDeviceFullName, edtIdDevice, edtDeviceType, edtMachineType;
+    CustomEditText edtOwner, edtDeviceName, edtDeviceFullName, edtIdDevice, edtDeviceType, edtMachineType, edtPercent;
     ImageView ivBack, ivReload;
     AppCompatButton btnAddDevice;
 
@@ -70,6 +79,7 @@ public class CreateDeviceActivity extends AppCompatActivity {
     Bitmap bitmap;
     private AppCompatButton btnDownQR;
     private ImageView imgQR;
+    private AppCompatTextView tvAddService;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -84,6 +94,17 @@ public class CreateDeviceActivity extends AppCompatActivity {
             return insets;
         });
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "QR Code Notifications";
+            String description = "Notifications for saved QR Codes";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("qr_code_channel", name, importance);
+            channel.setDescription(description);
+
+            // Đăng ký channel
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
         LoginResponse.Data userData = SharedPreferencesUtil.getUserData(this);
         if (userData != null) {
             token = userData.getToken();
@@ -107,11 +128,26 @@ public class CreateDeviceActivity extends AppCompatActivity {
         lnlQR = findViewById(R.id.lnl_qr);
         imgQR = findViewById(R.id.img_qr);
         btnDownQR = findViewById(R.id.btn_download_qr);
+        tvAddService = findViewById(R.id.tv_add_service);
+        edtPercent = findViewById(R.id.edt_percent);
+        tvAddService.setVisibility(View.GONE);
 
 
         selectServiceAdapter = new SelectServiceAdapter(this, listService);
         rcv_data.setLayoutManager(new LinearLayoutManager(this));
         rcv_data.setAdapter(selectServiceAdapter);
+
+        selectServiceAdapter.setOnServiceListEmptyListener(new SelectServiceAdapter.OnServiceListEmptyListener() {
+            @Override
+            public void onServiceListEmpty(List<Service> list) {
+                listService.clear();
+                listService.addAll(list);
+                tvCount.setText("Số dịch vụ đã thêm: " + listService.size());
+                if (list.isEmpty()) {
+                    tvAddService.setVisibility(View.GONE);
+                }
+            }
+        });
 
 
         getListUser();
@@ -159,7 +195,8 @@ public class CreateDeviceActivity extends AppCompatActivity {
                                         public void onChoose(List<Service> _listService) {
                                             listService.clear();
                                             listService.addAll(_listService);
-                                            tvCount.setText("Số dịch vụ đã thêm: " + _listService.size());
+                                            tvAddService.setVisibility(View.VISIBLE);
+                                            tvCount.setText("Số dịch vụ đã thêm: " + listService.size());
                                             selectServiceAdapter.notifyDataSetChanged();
                                         }
                                     });
@@ -173,15 +210,59 @@ public class CreateDeviceActivity extends AppCompatActivity {
             }
         });
 
+        tvAddService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!listService.isEmpty()) {
+                    Service service = listService.get(0);
+
+                    ServiceBottomSheet serviceBottomSheet = new ServiceBottomSheet(service, listService);
+                    serviceBottomSheet.show(getSupportFragmentManager(), serviceBottomSheet.getTag());
+                    serviceBottomSheet.setOnSelected(new ServiceBottomSheet.OnTypeSelect() {
+                        @Override
+                        public void onChoose(List<Service> _listService) {
+                            listService.addAll(_listService);
+                            tvAddService.setVisibility(View.VISIBLE);
+                            tvCount.setText("Số dịch vụ đã thêm: " + listService.size());
+                            selectServiceAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }
+        });
+
         btnDownQR.setOnClickListener(v -> {
             // Kiểm tra quyền lưu trữ
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                saveQRCodeToGallery(bitmap);
+                saveQRCodeToGallery2(bitmap);
             } else {
                 // Yêu cầu quyền nếu chưa có
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         });
+
+    }
+
+    public void updateServiceList(Service removedService) {
+        listService.remove(removedService); // Xóa item khỏi danh sách bên ngoài
+        tvCount.setText("Số dịch vụ đã thêm: " + listService.size()); // Cập nhật giao diện
+
+        // Ẩn view nếu danh sách rỗng
+        if (listService.isEmpty()) {
+            tvAddService.setVisibility(View.GONE);
+            rcv_data.setVisibility(View.GONE);
+        }
+    }
+
+    public void updateEditedService(Service updatedService) {
+        for (int i = 0; i < listService.size(); i++) {
+            if (listService.get(i).getServiceName().equals(updatedService.getServiceName())) { // So sánh theo ID hoặc tiêu chí phù hợp
+                listService.set(i, updatedService); // Cập nhật danh sách bên ngoài
+                break;
+            }
+        }
+
+        selectServiceAdapter.notifyDataSetChanged(); // Cập nhật giao diện
 
     }
 
@@ -214,6 +295,8 @@ public class CreateDeviceActivity extends AppCompatActivity {
 
     private void registerDevice() {
 
+        float percent = Float.parseFloat(edtPercent.getText().toString()) / 100; // Chuyển sang float và chia 100
+
         CreateDeviceRequest deviceRequest = new CreateDeviceRequest(
                 userSelected.getId(),
                 edtDeviceName.getText().toString(),
@@ -223,6 +306,7 @@ public class CreateDeviceActivity extends AppCompatActivity {
                 edtMachineType.getText().toString(),
                 "",
                 "",
+                percent,
                 listService
         );
 
@@ -234,6 +318,7 @@ public class CreateDeviceActivity extends AppCompatActivity {
                     Toast.makeText(CreateDeviceActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     lnlInfo.setVisibility(View.GONE);
                     lnlQR.setVisibility(View.VISIBLE);
+                    btnAddDevice.setVisibility(View.GONE);
 
                     initQR();
 //                    finish();
@@ -299,6 +384,67 @@ public class CreateDeviceActivity extends AppCompatActivity {
         }
     }
 
+    private void saveQRCodeToGallery2(Bitmap bitmap) {
+        // Tạo tên cho ảnh
+        String fileName = "QRCode_" + System.currentTimeMillis() + ".png";
+        String savedImageURL = null;
+
+        // Lưu ảnh vào thư viện
+        try {
+            savedImageURL = MediaStore.Images.Media.insertImage(
+                    getContentResolver(),
+                    bitmap,
+                    fileName,
+                    "QR Code Image"
+            );
+
+            // Kiểm tra nếu ảnh đã được lưu
+            if (savedImageURL != null) {
+                // Thông báo ảnh đã được lưu thành công
+                Toast.makeText(this, "QR máy giặt đã được tải về thư viện ảnh", Toast.LENGTH_SHORT).show();
+                showSaveSuccessNotification(savedImageURL);
+            } else {
+                Toast.makeText(this, "Tải ảnh thất bại", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error saving QR Code", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showSaveSuccessNotification(String savedImageURL) {
+        // Tạo Intent mở thư mục ảnh
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri imageUri = Uri.parse(savedImageURL);
+        intent.setDataAndType(imageUri, "image/*");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // Tạo PendingIntent để khi click vào thông báo sẽ mở thư mục ảnh
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Tạo thông báo
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "qr_code_channel")
+                .setSmallIcon(R.drawable.ic_app) // Icon thông báo
+                .setContentTitle("QR Code đã được lưu")
+                .setContentText("QR Code đã được lưu vào thư viện ảnh")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent) // Đặt PendingIntent khi click vào thông báo
+                .setAutoCancel(true); // Thông báo sẽ tự động biến mất khi người dùng click vào nó
+
+        // Hiển thị thông báo
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        notificationManager.notify(1, builder.build());
+    }
     private boolean validate() {
         if (edtOwner.getText().toString().isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập chủ thiết bị", Toast.LENGTH_SHORT).show();
@@ -318,6 +464,10 @@ public class CreateDeviceActivity extends AppCompatActivity {
         }
         if (edtDeviceType.getText().toString().isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập loại thiết bị", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(Float.parseFloat(edtPercent.getText().toString()) <= 0 || Float.parseFloat(edtPercent.getText().toString()) > 100) {
+            Toast.makeText(this, "% trích lại/giao dịch phải trong khoản 0 -> 100", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (edtMachineType.getText().toString().isEmpty()) {

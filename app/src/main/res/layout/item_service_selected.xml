@@ -17,6 +17,24 @@
         android:layout_height="wrap_content"
         tools:text="Tên dịch vụ: Giat thuong"/>
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_trash"
+        android:id="@+id/ic_delete"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_edit_order"
+        android:id="@+id/ic_edit"
+        app:layout_constraintTop_toBottomOf="@id/ic_delete"/>
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_price"
         android:layout_marginTop="8dp"

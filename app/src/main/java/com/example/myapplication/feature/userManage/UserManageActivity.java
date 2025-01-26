@@ -1,5 +1,7 @@
 package com.example.myapplication.feature.userManage;
 
+import static com.example.myapplication.util.CurrencyUtils.normalizeString;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,12 +22,14 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.CustomView.CustomEditText;
 import com.example.myapplication.R;
 import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
 import com.example.myapplication.feature.createAccount.CreateAccountActivity;
 import com.example.myapplication.feature.userDetail.UserDetailActivity;
 import com.example.myapplication.model.ChangePasswordRequest;
+import com.example.myapplication.model.DeviceResponse;
 import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.SimpleResult;
 import com.example.myapplication.model.UpdateUserRequest;
@@ -49,7 +53,10 @@ public class UserManageActivity extends AppCompatActivity {
     String token = "";
     private ApiService apiService;
     private List<UserResponse.User> userList;
+    private List<UserResponse.User> originalList;
     private ManageUserAdapter manageUserAdapter;
+    private CustomEditText edtSearch;
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +66,8 @@ public class UserManageActivity extends AppCompatActivity {
         rcvUser = findViewById(R.id.rcv_user);
         ivBack = findViewById(R.id.iv_back);
         btnAddAccount = findViewById(R.id.btn_addAccount);
+        edtSearch = findViewById(R.id.edt_search);
+
         LoginResponse.Data userData = SharedPreferencesUtil.getUserData(this);
         if (userData != null) {
             token = userData.getToken();
@@ -97,6 +106,39 @@ public class UserManageActivity extends AppCompatActivity {
 
         rcvUser.setLayoutManager(new LinearLayoutManager(this));
         rcvUser.setAdapter(manageUserAdapter);
+
+        edtSearch.setOnTextChangeListener(new CustomEditText.OnTextChangeListener() {
+            @Override
+            public void onTextChange(String text) {
+                if (text != null && !text.isEmpty()) {
+                    // Lọc danh sách dựa trên shortName
+                    List<UserResponse.User> filteredList = new ArrayList<>();
+
+                    String normalizedSearchText = normalizeString(text);
+
+                    for (UserResponse.User user : originalList) {
+                        String normalizedFullName = normalizeString(user.getFullName());
+                        String normalizedPhoneNumber = normalizeString(user.getPhoneNumber());
+
+                        // Kiểm tra xem normalizedSearchText có xuất hiện trong fullName hoặc phoneNumber
+                        if ((normalizedFullName != null && normalizedFullName.contains(normalizedSearchText)) ||
+                                (normalizedPhoneNumber != null && normalizedPhoneNumber.contains(normalizedSearchText))) {
+                            filteredList.add(user);
+                        }
+                    }
+
+                    // Cập nhật lại danh sách và thông báo cho adapter
+                    userList.clear();
+                    userList.addAll(filteredList);
+                    manageUserAdapter.notifyDataSetChanged();
+                }else {
+                    // Nếu không có văn bản tìm kiếm, hiển thị danh sách ban đầu
+                    userList.clear();
+                    userList.addAll(originalList);
+                    manageUserAdapter.notifyDataSetChanged();
+                }
+            }
+        });
 
 
         apiService = RetrofitClient.getInstance().create(ApiService.class);
@@ -197,6 +239,7 @@ public class UserManageActivity extends AppCompatActivity {
                     UserResponse apiResponse = response.body();
                     if(apiResponse.isSuccess()) {
                         userList.addAll(apiResponse.getData());
+                        originalList = new ArrayList<>(userList);
                         manageUserAdapter.notifyDataSetChanged();
                     }else {
                         Toast.makeText(UserManageActivity.this,

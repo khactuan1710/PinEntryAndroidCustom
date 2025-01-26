@@ -1,6 +1,11 @@
 package com.example.myapplication.adapter;
 
+import static com.example.myapplication.api.RetrofitClient.BASE_URL;
+
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,6 +29,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -38,10 +45,13 @@ import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
 import com.example.myapplication.feature.createDevice.CreateDeviceActivity;
 import com.example.myapplication.feature.createDevice.OwnerBottomSheet;
+import com.example.myapplication.feature.createDevice.SelectServiceAdapter;
+import com.example.myapplication.feature.createDevice.ServiceBottomSheet;
 import com.example.myapplication.model.ApiResponse;
 import com.example.myapplication.model.DeviceRequest;
 import com.example.myapplication.model.DeviceResponse;
 import com.example.myapplication.model.LoginResponse;
+import com.example.myapplication.model.Service;
 import com.example.myapplication.model.SimpleResult;
 import com.example.myapplication.model.UpdateDeviceRequest;
 import com.example.myapplication.model.UserResponse;
@@ -79,6 +89,11 @@ public class DeviceDetailActivity extends AppCompatActivity {
     Bitmap bitmap;
 
     UserResponse.User userSelected;
+    private AppCompatTextView tvAddService;
+    RecyclerView rcv_data;
+    private List<Service> listService;
+    private SelectServiceAdapter selectServiceAdapter;
+    CustomEditText edtDeviceType, edtServiceType, edtPercent;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -95,6 +110,18 @@ public class DeviceDetailActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "QR Code Notifications";
+            String description = "Notifications for saved QR Codes";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("qr_code_channel", name, importance);
+            channel.setDescription(description);
+
+            // Đăng ký channel
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
         getWindow().setStatusBarColor(Color.parseColor("#ff4b19"));
         LoginResponse.Data userData = SharedPreferencesUtil.getUserData(this);
         if (userData != null) {
@@ -109,15 +136,32 @@ public class DeviceDetailActivity extends AppCompatActivity {
         edtOwner = findViewById(R.id.tv_owner);
         btn_update = findViewById(R.id.btn_update);
         tv_lb = findViewById(R.id.tv_lb);
+        rcv_data = findViewById(R.id.rcv_data);
+        tvAddService = findViewById(R.id.tv_add_service);
+        edtDeviceType = findViewById(R.id.edtDeviceType);
+        edtServiceType = findViewById(R.id.edtServiceType);
+        edtPercent = findViewById(R.id.edt_percent);
 
         if (userData != null && userData.getType().equals("admin")) {
             edtOwner.setVisibility(View.VISIBLE);
             btn_update.setVisibility(View.VISIBLE);
             tv_lb.setVisibility(View.VISIBLE);
+
+            tvAddService.setVisibility(View.VISIBLE);
+            rcv_data.setVisibility(View.VISIBLE);
+            edtPercent.setVisibility(View.VISIBLE);
+            edtServiceType.setVisibility(View.VISIBLE);
+            edtDeviceType.setVisibility(View.VISIBLE);
         }else {
             edtOwner.setVisibility(View.GONE);
             btn_update.setVisibility(View.GONE);
             tv_lb.setVisibility(View.GONE);
+
+            tvAddService.setVisibility(View.GONE);
+            rcv_data.setVisibility(View.GONE);
+            edtPercent.setVisibility(View.GONE);
+            edtServiceType.setVisibility(View.GONE);
+            edtDeviceType.setVisibility(View.GONE);
         }
 
         imgQR = findViewById(R.id.img_qr);
@@ -126,7 +170,17 @@ public class DeviceDetailActivity extends AppCompatActivity {
         device = (DeviceResponse.Device) getIntent().getSerializableExtra("DEVICE_DATA");
         if(device != null) {
             tvDeviceName.setText(device.getDeviceFullName());
+            listService = device.getServices();
+            edtDeviceType.setText(device.getDeviceType());
+            edtServiceType.setText(device.getMachineType());
+            if (device.getPercentAppDeducted() != null) {
+                edtPercent.setText(String.valueOf(Math.round(device.getPercentAppDeducted() * 100)));
+            }
         }
+
+        selectServiceAdapter = new SelectServiceAdapter(this, listService);
+        rcv_data.setLayoutManager(new LinearLayoutManager(this));
+        rcv_data.setAdapter(selectServiceAdapter);
 
         String deviceName = device.getDeviceName();
         String url = "https://iot.mimi.sg/?maMayGiat=" + deviceName;  // Chuỗi URL với tên máy giặt
@@ -139,7 +193,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             bitmap = Bitmap.createBitmap(512, 512, Bitmap.Config.RGB_565);
             for (int x = 0; x < 512; x++) {
                 for (int y = 0; y < 512; y++) {
-                    bitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                    bitmap.setPixel(x, y, bitMatrix .get(x, y) ? Color.BLACK : Color.WHITE);
                 }
             }
 
@@ -153,7 +207,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         btnDownQR.setOnClickListener(v -> {
             // Kiểm tra quyền lưu trữ
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                saveQRCodeToGallery(bitmap);
+                saveQRCodeToGallery2(bitmap);
             } else {
                 // Yêu cầu quyền nếu chưa có
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
@@ -182,14 +236,14 @@ public class DeviceDetailActivity extends AppCompatActivity {
 
         tvHistory.setOnClickListener(v -> {
             Intent intent = new Intent(DeviceDetailActivity.this, WebViewActivity.class);
-            intent.putExtra("url", "https://iot.mimi.sg/history?hostID="+device.getUserID()+"&deviceID=" + device.getDeviceId());
+            intent.putExtra("url",  BASE_URL + "/history?hostID="+device.getUserID()+"&deviceID=" + device.getDeviceId());
             intent.putExtra("header", "Lịch sử giặt");
             intent.putExtra("token", token);
             startActivity(intent);
         });
         tvReport.setOnClickListener(v -> {
             Intent intent = new Intent(DeviceDetailActivity.this, WebViewActivity.class);
-            intent.putExtra("url", "https://iot.mimi.sg/report?hostID="+device.getUserID()+"&deviceID=" + device.getDeviceId());
+            intent.putExtra("url", BASE_URL + "/report?hostID="+device.getUserID()+"&deviceID=" + device.getDeviceId());
             intent.putExtra("header", "Báo cáo/Thống kê");
             intent.putExtra("token", token);
             startActivity(intent);
@@ -214,11 +268,64 @@ public class DeviceDetailActivity extends AppCompatActivity {
         btn_update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(edtOwner.getText() != null && !edtOwner.getText().isEmpty()) {
+                if(validate()) {
                     updateUser();
                 }
             }
         });
+
+        tvAddService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!listService.isEmpty()) {
+                    Service service = listService.get(0);
+
+                    ServiceBottomSheet serviceBottomSheet = new ServiceBottomSheet(service, listService);
+                    serviceBottomSheet.show(getSupportFragmentManager(), serviceBottomSheet.getTag());
+                    serviceBottomSheet.setOnSelected(new ServiceBottomSheet.OnTypeSelect() {
+                        @Override
+                        public void onChoose(List<Service> _listService) {
+                            listService.addAll(_listService);
+                            tvAddService.setVisibility(View.VISIBLE);
+                            rcv_data.setVisibility(View.VISIBLE);
+                            selectServiceAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }else {
+                    ServiceBottomSheet serviceBottomSheet = new ServiceBottomSheet();
+                    serviceBottomSheet.show(getSupportFragmentManager(), serviceBottomSheet.getTag());
+                    serviceBottomSheet.setOnSelected(new ServiceBottomSheet.OnTypeSelect() {
+                        @Override
+                        public void onChoose(List<Service> _listService) {
+                            listService.clear();
+                            listService.addAll(_listService);
+                            tvAddService.setVisibility(View.VISIBLE);
+                            selectServiceAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private boolean validate() {
+        if (edtDeviceType.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập loại thiết bị", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(Float.parseFloat(edtPercent.getText().toString()) <= 0 || Float.parseFloat(edtPercent.getText().toString()) > 100) {
+            Toast.makeText(this, "% trích lại/giao dịch phải trong khoản 0 -> 100", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (edtServiceType.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập dịch vụ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (listService.isEmpty()) {
+            Toast.makeText(this, "Vui lòng chọn dịch vụ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     private void saveQRCodeToGallery(Bitmap bitmap) {
@@ -247,9 +354,108 @@ public class DeviceDetailActivity extends AppCompatActivity {
         }
     }
 
+    private void saveQRCodeToGallery2(Bitmap bitmap) {
+        // Tạo tên cho ảnh
+        String fileName = "QRCode_" + System.currentTimeMillis() + ".png";
+        String savedImageURL = null;
+
+        // Lưu ảnh vào thư viện
+        try {
+            savedImageURL = MediaStore.Images.Media.insertImage(
+                    getContentResolver(),
+                    bitmap,
+                    fileName,
+                    "QR Code Image"
+            );
+
+            // Kiểm tra nếu ảnh đã được lưu
+            if (savedImageURL != null) {
+                // Thông báo ảnh đã được lưu thành công
+                Toast.makeText(this, "QR máy giặt đã được tải về thư viện ảnh", Toast.LENGTH_SHORT).show();
+                showSaveSuccessNotification(savedImageURL);
+            } else {
+                Toast.makeText(this, "Tải ảnh thất bại", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error saving QR Code", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showSaveSuccessNotification(String savedImageURL) {
+        // Tạo Intent mở thư mục ảnh
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri imageUri = Uri.parse(savedImageURL);
+        intent.setDataAndType(imageUri, "image/*");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // Tạo PendingIntent để khi click vào thông báo sẽ mở thư mục ảnh
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Tạo thông báo
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "qr_code_channel")
+                .setSmallIcon(R.drawable.ic_app) // Icon thông báo
+                .setContentTitle("QR Code đã được lưu")
+                .setContentText("QR Code đã được lưu vào thư viện ảnh")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent) // Đặt PendingIntent khi click vào thông báo
+                .setAutoCancel(true); // Thông báo sẽ tự động biến mất khi người dùng click vào nó
+
+        // Hiển thị thông báo
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        notificationManager.notify(1, builder.build());
+    }
+
+
+    public void updateEditedService(Service updatedService) {
+        for (int i = 0; i < listService.size(); i++) {
+            if (listService.get(i).get_id().equals(updatedService.get_id())) { // So sánh theo ID hoặc tiêu chí phù hợp
+                listService.set(i, updatedService); // Cập nhật danh sách bên ngoài
+                break;
+            }
+        }
+
+        selectServiceAdapter.notifyDataSetChanged(); // Cập nhật giao diện
+
+    }
+
+    public void updateServiceList(Service removedService) {
+        listService.remove(removedService); // Xóa item khỏi danh sách bên ngoài
+
+        if (listService.isEmpty()) {
+            rcv_data.setVisibility(View.GONE);
+        }
+        selectServiceAdapter.notifyDataSetChanged(); // Cập nhật giao diện
+    }
+
 
     private void updateUser() {
-        UpdateDeviceRequest request = new UpdateDeviceRequest(userSelected.getId());
+        UpdateDeviceRequest request = new UpdateDeviceRequest();
+        if(userSelected != null && userSelected.getId() != null) {
+            request.setUserID(userSelected.getId());
+        }
+        if(listService != null) {
+            request.setServices(listService);
+        }
+        float percent = Float.parseFloat(edtPercent.getText().toString()) / 100;
+        request.setPercentAppDeducted(percent);
+
+        if(edtDeviceType.getText() != null && !edtDeviceType.getText().isEmpty()) {
+            request.setDeviceType(edtDeviceType.getText().toString());
+        }
+        if(edtServiceType.getText() != null && !edtServiceType.getText().isEmpty()) {
+            request.setMachineType(edtServiceType.getText().toString());
+        }
 
         Call<SimpleResult> call = apiService.updateDevice("Bearer " +token, device.getDeviceId(), request);
         call.enqueue(new Callback<SimpleResult>() {

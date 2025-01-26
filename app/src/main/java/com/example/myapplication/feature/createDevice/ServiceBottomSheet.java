@@ -33,7 +33,14 @@ public class ServiceBottomSheet extends BottomSheetDialogFragment {
     AppCompatTextView tvCount;
 
     List<Service> serviceList;
+    private Service service;
     public ServiceBottomSheet() {
+    }
+
+    private List<Service> serviceCount;
+    public ServiceBottomSheet(Service service, List<Service> serviceList) {
+        this.service = service;
+        this.serviceCount = serviceList;
     }
     public void setOnSelected(OnTypeSelect onTypeSelect) {
         this.onTypeSelect = onTypeSelect;
@@ -55,10 +62,22 @@ public class ServiceBottomSheet extends BottomSheetDialogFragment {
         tvCount = view.findViewById(R.id.tv_count);
         serviceList = new ArrayList<>();
 
+        if (service != null) {
+            edtName.setText(service.getServiceName());
+            edtPrice.setText(String.valueOf(service.getPrice()));
+            edtTime.setText(String.valueOf(service.getTotalMinutes()));
+        }
+        if(serviceCount != null && !serviceCount.isEmpty()) {
+//            serviceList.addAll(serviceCount);
+            tvCount.setText("Số dịch vụ đã thêm: " + serviceCount.size());
+        }
 
         ivClose.setOnClickListener(new View.OnClickListener() {
                                        @Override
                                        public void onClick(View v) {
+                                           if (!serviceList.isEmpty()) {
+                                               onTypeSelect.onChoose(serviceList);
+                                           }
                                            dismiss();
                                        }
                                    });
@@ -70,7 +89,13 @@ public class ServiceBottomSheet extends BottomSheetDialogFragment {
                 if (validate()) {
                     Service service = new Service(edtName.getText().toString(), Integer.parseInt(edtPrice.getText().toString()), Integer.parseInt(edtTime.getText().toString()));
                     serviceList.add(service);
-                    tvCount.setText("Số dịch vụ đã thêm: " + serviceList.size());
+
+                    if(serviceCount != null && !serviceCount.isEmpty()) {
+                        tvCount.setText("Số dịch vụ đã thêm: " + (serviceCount.size() + serviceList.size()));
+                    }
+                    else {
+                        tvCount.setText("Số dịch vụ đã thêm: " + serviceList.size());
+                    }
                     Toast.makeText(getContext(), "Thêm dịch vụ thành công", Toast.LENGTH_SHORT).show();
                     edtName.setText("");
                     edtPrice.setText("");

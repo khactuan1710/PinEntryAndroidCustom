@@ -55,6 +55,18 @@
 
     </RelativeLayout>
 
+    <com.example.myapplication.CustomView.CustomEditText
+        android:id="@+id/edt_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hint="Tìm chủ trọ(tên, sđt)"
+        app:inputType="text"
+        app:showBgRadius="true"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_below="@id/header"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv_user"
         app:layout_constraintTop_toBottomOf="@id/header"
@@ -62,7 +74,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:listitem="@layout/item_user"
-        android:layout_below="@id/header"
+        android:layout_below="@id/edt_search"
         android:layout_above="@id/btn_addAccount"
         tools:itemCount="5"
         android:layout_marginTop="10dp"/>

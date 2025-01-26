@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import static com.example.myapplication.api.RetrofitClient.BASE_URL;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -27,6 +29,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.CustomView.CustomEditText;
 import com.example.myapplication.adapter.DeviceAdapter;
 import com.example.myapplication.adapter.DeviceDetailActivity;
 import com.example.myapplication.api.ApiService;
@@ -36,6 +39,7 @@ import com.example.myapplication.feature.createDevice.CreateDeviceActivity;
 import com.example.myapplication.feature.login.LoginActivity;
 import com.example.myapplication.feature.userDetail.UserDetailActivity;
 import com.example.myapplication.model.ApiResponse;
+import com.example.myapplication.model.BankCodeResponse;
 import com.example.myapplication.model.DeviceRequest;
 import com.example.myapplication.model.DeviceResponse;
 import com.example.myapplication.model.LoginResponse;
@@ -73,8 +77,10 @@ public class MainActivity extends AppCompatActivity {
     String fullname = "";
 
     private List<DeviceResponse.Device> deviceList;
+    private List<DeviceResponse.Device> originalDeviceList;
     private DeviceAdapter deviceAdapter;
     private ApiService apiService;
+    private CustomEditText edtSearch;
 
     LoginResponse.Data userData;
     @SuppressLint("MissingInflatedId")
@@ -94,11 +100,38 @@ public class MainActivity extends AppCompatActivity {
         tvFullName = findViewById(R.id.tv_full_name);
         buttonUserManage = findViewById(R.id.btn_user_manage);
         buttonAddDevice = findViewById(R.id.btn_addDevice);
+        edtSearch = findViewById(R.id.edt_search);
         buttonAddDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, CreateDeviceActivity.class);
                 startActivityForResult(intent, 888);
+            }
+        });
+
+        edtSearch.setOnTextChangeListener(new CustomEditText.OnTextChangeListener() {
+            @Override
+            public void onTextChange(String text) {
+                if (text != null && !text.isEmpty()) {
+                    // Lọc danh sách dựa trên shortName
+                    List<DeviceResponse.Device> filteredList = new ArrayList<>();
+                    for (DeviceResponse.Device device : originalDeviceList) {
+                        if (device.getDeviceFullName() != null &&
+                                device.getDeviceFullName().toLowerCase().contains(text.toLowerCase())) {
+                            filteredList.add(device);
+                        }
+                    }
+
+                    // Cập nhật lại danh sách và thông báo cho adapter
+                    deviceList.clear();
+                    deviceList.addAll(filteredList);
+                    deviceAdapter.notifyDataSetChanged();
+                }else {
+                    // Nếu không có văn bản tìm kiếm, hiển thị danh sách ban đầu
+                    deviceList.clear();
+                    deviceList.addAll(originalDeviceList);
+                    deviceAdapter.notifyDataSetChanged();
+                }
             }
         });
 
@@ -184,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnHistory.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-            intent.putExtra("url", "https://iot.mimi.sg/history");
+            intent.putExtra("url", BASE_URL + "/history");
             intent.putExtra("header", "Lịch sử giặt");
             intent.putExtra("token", token);
             startActivity(intent);
@@ -213,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
                     if(apiResponse.isSuccess()) {
                         deviceList.clear();
                         deviceList.addAll(apiResponse.getData());
+                        originalDeviceList = new ArrayList<>(deviceList);
                         deviceAdapter.notifyDataSetChanged();
                     }else {
                         Toast.makeText(MainActivity.this,

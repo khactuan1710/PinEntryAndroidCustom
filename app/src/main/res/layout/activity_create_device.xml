@@ -122,6 +122,15 @@
                     android:layout_marginHorizontal="12dp"
                     />
                 <com.example.myapplication.CustomView.CustomEditText
+                    android:id="@+id/edt_percent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint="% trích lại/giao dịch"
+                    app:inputType="number"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="12dp"
+                    />
+                <com.example.myapplication.CustomView.CustomEditText
                     android:id="@+id/edtMachineType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -149,6 +158,18 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
                     tools:listitem="@layout/item_service_selected"/>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_add_service"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Thêm dịch vụ"
+                    android:drawableLeft="@drawable/ic_add"
+                    android:layout_marginTop="12dp"
+                    android:padding="12dp"
+                    android:drawablePadding="5dp"
+                    android:background="@drawable/bg_white_radius_8"
+                    android:layout_gravity="center"
+                    android:gravity="center"/>
             </LinearLayout>
 
             <LinearLayout

@@ -14,8 +14,10 @@ public class CreateDeviceRequest {
     private String longitude;
     private List<Service> services;
 
+    private float percentAppDeducted;
+
     public CreateDeviceRequest(String accountID, String deviceName, String deviceFullName, String deviceID,
-                         String deviceType, String machineType, String latitude, String longitude, List<Service> services) {
+                         String deviceType, String machineType, String latitude, String longitude, float percentAppDeducted,  List<Service> services) {
         this.accountID = accountID;
         this.deviceName = deviceName;
         this.deviceFullName = deviceFullName;
@@ -24,6 +26,7 @@ public class CreateDeviceRequest {
         this.machineType = machineType;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.percentAppDeducted = percentAppDeducted;
         this.services = services;
     }
 

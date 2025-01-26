@@ -1,5 +1,7 @@
 package com.example.myapplication.feature.userDetail;
 
+import static com.example.myapplication.api.RetrofitClient.BASE_URL;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -127,7 +129,7 @@ public class UserDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(UserDetailActivity.this, WebViewActivity.class);
-                intent.putExtra("url", "https://iot.mimi.sg/history?hostID=" + user.getId());
+                intent.putExtra("url", BASE_URL + "/history?hostID=" + user.getId());
                 intent.putExtra("header", "Lịch sử giặt");
                 intent.putExtra("token", token);
                 startActivity(intent);
@@ -137,7 +139,7 @@ public class UserDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(UserDetailActivity.this, WebViewActivity.class);
-                intent.putExtra("url", "https://iot.mimi.sg/report?hostID=" + user.getId());
+                intent.putExtra("url", BASE_URL + "/report?hostID=" + user.getId());
                 intent.putExtra("header", "Báo cáo/thống kê");
                 intent.putExtra("token", token);
                 startActivity(intent);

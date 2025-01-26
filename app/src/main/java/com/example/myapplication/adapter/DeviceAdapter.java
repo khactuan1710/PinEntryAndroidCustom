@@ -1,5 +1,7 @@
 package com.example.myapplication.adapter;
 
+import static com.example.myapplication.api.RetrofitClient.BASE_URL;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
@@ -63,14 +65,14 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
 
         holder.tvHistory.setOnClickListener(v -> {
             Intent intent = new Intent(context, WebViewActivity.class);
-            intent.putExtra("url", "https://iot.mimi.sg/history?hostID="+device.getUserID()+"&deviceID=" + device.getDeviceId());
+            intent.putExtra("url", BASE_URL + "/history?hostID="+device.getUserID()+"&deviceID=" + device.getDeviceId());
             intent.putExtra("header", "Lịch sử giặt");
             intent.putExtra("token", token);
             context.startActivity(intent);
         });
         holder.tvReport.setOnClickListener(v -> {
             Intent intent = new Intent(context, WebViewActivity.class);
-            intent.putExtra("url", "https://iot.mimi.sg/report?hostID="+device.getUserID()+"&deviceID=" + device.getDeviceId());
+            intent.putExtra("url",  BASE_URL + "/report?hostID="+device.getUserID()+"&deviceID=" + device.getDeviceId());
             intent.putExtra("header", "Báo cáo/Thống kê");
             intent.putExtra("token", token);
             context.startActivity(intent);

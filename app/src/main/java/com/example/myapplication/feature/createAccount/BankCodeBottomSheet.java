@@ -16,11 +16,13 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.CustomView.CustomEditText;
 import com.example.myapplication.R;
 import com.example.myapplication.model.BankCodeResponse;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BankCodeBottomSheet extends BottomSheetDialogFragment {
@@ -30,6 +32,8 @@ public class BankCodeBottomSheet extends BottomSheetDialogFragment {
     RecyclerView rcvBankCode;
     private BankCodeAdapter bankCodeAdapter;
     private List<BankCodeResponse.BankCode> bankCodeList;
+    private List<BankCodeResponse.BankCode> originalBankCodeList;
+    private CustomEditText edtSearch;
     private Activity activity;
     public BankCodeBottomSheet(Activity activity, List<BankCodeResponse.BankCode> bankCodeList) {
         this.activity = activity;
@@ -48,6 +52,7 @@ public class BankCodeBottomSheet extends BottomSheetDialogFragment {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.botom_sheet_bank_code, null);
         ivClose = view.findViewById(R.id.iv_close);
         rcvBankCode = view.findViewById(R.id.rcv_bank_code);
+        edtSearch = view.findViewById(R.id.edt_search);
 
         ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,6 +60,7 @@ public class BankCodeBottomSheet extends BottomSheetDialogFragment {
                 dismiss();
             }
         });
+
 
 
         bankCodeAdapter = new BankCodeAdapter(activity, bankCodeList);
@@ -71,6 +77,33 @@ public class BankCodeBottomSheet extends BottomSheetDialogFragment {
 
         rcvBankCode.setLayoutManager(new LinearLayoutManager(activity));
         rcvBankCode.setAdapter(bankCodeAdapter);
+
+        originalBankCodeList = new ArrayList<>(bankCodeList);
+        edtSearch.setOnTextChangeListener(new CustomEditText.OnTextChangeListener() {
+            @Override
+            public void onTextChange(String text) {
+                if (text != null && !text.isEmpty()) {
+                    // Lọc danh sách dựa trên shortName
+                    List<BankCodeResponse.BankCode> filteredList = new ArrayList<>();
+                    for (BankCodeResponse.BankCode bankCode : originalBankCodeList) {
+                        if (bankCode.getShortName() != null &&
+                                bankCode.getShortName().toLowerCase().contains(text.toLowerCase())) {
+                            filteredList.add(bankCode);
+                        }
+                    }
+
+                    // Cập nhật lại danh sách và thông báo cho adapter
+                    bankCodeList.clear();
+                    bankCodeList.addAll(filteredList);
+                    bankCodeAdapter.notifyDataSetChanged();
+                }else {
+                    // Nếu không có văn bản tìm kiếm, hiển thị danh sách ban đầu
+                    bankCodeList.clear();
+                    bankCodeList.addAll(originalBankCodeList);
+                    bankCodeAdapter.notifyDataSetChanged();
+                }
+            }
+        });
 
         bottomSheetDialog.setContentView(view);
         bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

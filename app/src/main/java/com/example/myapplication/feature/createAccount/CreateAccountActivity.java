@@ -110,7 +110,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                 bottomSheet.setOnBankCodeSelected(new BankCodeBottomSheet.OnBankCodeSelect() {
                     @Override
                     public void onChoose(BankCodeResponse.BankCode bankCode) {
-                        edtBankCode.setText(bankCode.getName());
+                        edtBankCode.setText(bankCode.getShortName());
                         bankCodeSelected = bankCode;
                     }
                 });

@@ -14,11 +14,18 @@ public class Service implements Serializable {
     @SerializedName("totalMinutes")
     private int totalMinutes;
 
+    @SerializedName("_id")
+    private String _id;
+
     // Constructor
     public Service(String serviceName, int price, int totalMinutes) {
         this.serviceName = serviceName;
         this.price = price;
         this.totalMinutes = totalMinutes;
+    }
+
+    public String get_id() {
+        return _id == null ? "" : _id;
     }
 
     // Getters

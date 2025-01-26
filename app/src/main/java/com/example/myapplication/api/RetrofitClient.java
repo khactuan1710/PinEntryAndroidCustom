@@ -9,6 +9,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     private static Retrofit retrofit;
+//    public static String BASE_URL = "http://192.168.0.112:5001";
+    public static String BASE_URL = "https://iot.mimi.sg";
 
     public static Retrofit getInstance() {
         if (retrofit == null) {
@@ -26,7 +28,8 @@ public class RetrofitClient {
 
             // Tạo Retrofit với OkHttpClient
             retrofit = new Retrofit.Builder()
-                    .baseUrl("https://iot.mimi.sg") // URL của server
+//                    .baseUrl("https://iot.mimi.sg") // URL của server
+                    .baseUrl(BASE_URL) // URL của server
                     .client(okHttpClient)          // Thêm OkHttpClient vào Retrofit
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
