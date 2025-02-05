@@ -313,6 +313,10 @@ public class DeviceDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Vui lòng nhập loại thiết bị", Toast.LENGTH_SHORT).show();
             return false;
         }
+        if(edtPercent.getText() == null || edtPercent.getText().isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập % trích lại/giao dịch", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         if(Float.parseFloat(edtPercent.getText().toString()) <= 0 || Float.parseFloat(edtPercent.getText().toString()) > 100) {
             Toast.makeText(this, "% trích lại/giao dịch phải trong khoản 0 -> 100", Toast.LENGTH_SHORT).show();
             return false;
