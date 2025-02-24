@@ -1,5 +1,7 @@
 package com.example.myapplication.model;
 
+import java.util.List;
+
 public class RegisterRequest {
     private final String username;
     private final String phoneNumber;
@@ -13,10 +15,11 @@ public class RegisterRequest {
     private final String bankAccountName;
     private final String type;
     private final float percentAppDeducted;
+    private final List<String> addressNew;
 
     public RegisterRequest(String username, String phoneNumber, String password, String fullName, String address,
                            float percentAppDeducted, String eWeLinkAccount, String eWeLinkPassword, String bankCode,
-                           String bankAccountNumber, String bankAccountName, String type) {
+                           String bankAccountNumber, String bankAccountName, String type, List<String> addressNew) {
         this.username = username;
         this.phoneNumber = phoneNumber;
         this.password = password;
@@ -29,5 +32,6 @@ public class RegisterRequest {
         this.bankAccountNumber = bankAccountNumber;
         this.bankAccountName = bankAccountName;
         this.type = type;
+        this.addressNew = addressNew;
     }
 }

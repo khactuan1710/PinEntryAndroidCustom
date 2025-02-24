@@ -1,6 +1,7 @@
 package com.example.myapplication.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserResponse {
@@ -28,6 +29,15 @@ public class UserResponse {
         private String phoneNumber;
         private String type;
         private String username;
+        private List<String> addressNew;
+
+        public List<String> getAddressNew() {
+            return addressNew == null? new ArrayList<>(): addressNew;
+        }
+
+        public void setAddressNew(List<String> addressNew) {
+            this.addressNew = addressNew;
+        }
 
         // Getters and Setters
         public String getId() {

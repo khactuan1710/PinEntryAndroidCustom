@@ -19,7 +19,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -95,6 +98,10 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private SelectServiceAdapter selectServiceAdapter;
     CustomEditText edtDeviceType, edtServiceType, edtPercent;
 
+    private Spinner spinnerAddress;
+    private ArrayAdapter<String> addressAdapter;
+    private String selectedAddress;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +148,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         edtDeviceType = findViewById(R.id.edtDeviceType);
         edtServiceType = findViewById(R.id.edtServiceType);
         edtPercent = findViewById(R.id.edt_percent);
+        spinnerAddress = findViewById(R.id.spinner_address);
 
         if (userData != null && userData.getType().equals("admin")) {
             edtOwner.setVisibility(View.VISIBLE);
@@ -248,6 +256,9 @@ public class DeviceDetailActivity extends AppCompatActivity {
             intent.putExtra("token", token);
             startActivity(intent);
         });
+        addressAdapter = new ArrayAdapter<>(this, R.layout.item_spinner_dropdown, new ArrayList<>());
+        addressAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAddress.setAdapter(addressAdapter);
 
         edtOwner.setOnClickViewMaskListener(new CustomEditText.OnClickViewMaskListener() {
             @Override
@@ -259,9 +270,25 @@ public class DeviceDetailActivity extends AppCompatActivity {
                     public void onChoose(UserResponse.User user) {
                         userSelected = user;
                         edtOwner.setText(user.getFullName());
+                        updateSpinnerData();
                     }
                 });
 
+            }
+        });
+
+        updateSpinnerData();
+
+
+        spinnerAddress.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedAddress = (String) parent.getItemAtPosition(position);
+//                Toast.makeText(CreateDeviceActivity.this, "Đã chọn: " + selectedAddress, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
@@ -308,6 +335,27 @@ public class DeviceDetailActivity extends AppCompatActivity {
         });
     }
 
+    private void updateSpinnerData() {
+        List<String> addresses = new ArrayList<>();
+
+        if (userSelected == null) {
+            addresses.add("Chọn địa chỉ"); // Hint ban đầu khi chưa chọn Owner
+        } else {
+            addresses.addAll(userSelected.getAddressNew());
+            if(userSelected.getAddressNew().size() > 0) {
+                selectedAddress = userSelected.getAddressNew().get(0);
+            }
+            if (addresses.isEmpty()) {
+                addresses.add("Không có địa chỉ");
+            }
+        }
+
+        addressAdapter.clear();
+        addressAdapter.addAll(addresses);
+        spinnerAddress.setSelection(0); // Luôn chọn item đầu tiên (hint hoặc địa chỉ đầu tiên)
+        addressAdapter.notifyDataSetChanged();
+    }
+
     private boolean validate() {
         if (edtDeviceType.getText().toString().isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập loại thiết bị", Toast.LENGTH_SHORT).show();
@@ -329,6 +377,10 @@ public class DeviceDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Vui lòng chọn dịch vụ", Toast.LENGTH_SHORT).show();
             return false;
         }
+//        if(selectedAddress == null|| selectedAddress.isEmpty()|| selectedAddress.equals("Chọn địa chỉ")) {
+//            Toast.makeText(this, "Vui lòng chọn địa chỉ", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
         return true;
     }
 
@@ -460,6 +512,10 @@ public class DeviceDetailActivity extends AppCompatActivity {
         if(edtServiceType.getText() != null && !edtServiceType.getText().isEmpty()) {
             request.setMachineType(edtServiceType.getText().toString());
         }
+        if (selectedAddress != null && !selectedAddress.isEmpty() && !selectedAddress.equals("Chọn địa chỉ")) {
+            request.setAddress(selectedAddress);
+        }
+
 
         Call<SimpleResult> call = apiService.updateDevice("Bearer " +token, device.getDeviceId(), request);
         call.enqueue(new Callback<SimpleResult>() {

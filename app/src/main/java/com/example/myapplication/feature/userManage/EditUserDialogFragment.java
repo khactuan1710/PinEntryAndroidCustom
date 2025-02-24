@@ -12,16 +12,24 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.CustomView.CustomEditText;
 import com.example.myapplication.R;
+import com.example.myapplication.feature.createAccount.AddressAdapter;
+import com.example.myapplication.feature.createAccount.InputAddressDialogFragment;
 import com.example.myapplication.model.UserResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditUserDialogFragment extends DialogFragment {
     private CustomEditText edtPhoneNumber, edtAddress, edtUsername;
@@ -30,6 +38,10 @@ public class EditUserDialogFragment extends DialogFragment {
     private Switch switchIsActive;
     private UserResponse.User user;
     private OnUserUpdatedListener onUserUpdatedListener;
+    private List<String> listAddress;
+    TextView tvAddAddress, tvCount;
+    RecyclerView rcvAddress;
+    private AddressAdapter addressAdapter;
 
     public static EditUserDialogFragment newInstance(UserResponse.User user) {
         EditUserDialogFragment fragment = new EditUserDialogFragment();
@@ -69,6 +81,11 @@ public class EditUserDialogFragment extends DialogFragment {
         btnUpdate = view.findViewById(R.id.btn_update);
         ivClose = view.findViewById(R.id.iv_close);
 
+        tvAddAddress = view.findViewById(R.id.tv_add_address);
+        rcvAddress = view.findViewById(R.id.rcv_data);
+        tvCount = view.findViewById(R.id.tv_count);
+
+        listAddress = new ArrayList<>();
         if (getArguments() != null) {
             user = (UserResponse.User) getArguments().getSerializable("user");
             if (user != null) {
@@ -76,16 +93,41 @@ public class EditUserDialogFragment extends DialogFragment {
                 edtAddress.setText(user.getAddress());
                 edtUsername.setText(user.getFullName());
                 switchIsActive.setChecked(user.isActive());
+                listAddress = user.getAddressNew();
             }
         }
+
+        addressAdapter = new AddressAdapter(getContext(), listAddress);
+        rcvAddress.setLayoutManager(new LinearLayoutManager(getContext()));
+        rcvAddress.setAdapter(addressAdapter);
+        addressAdapter.setOnDelete(new AddressAdapter.OnDeleteListener() {
+            @Override
+            public void onDelete(String address) {
+                listAddress.remove(address);
+                tvCount.setText("Địa chỉ: " + listAddress.size());
+                addressAdapter.notifyDataSetChanged();
+            }
+        });
+
+        tvAddAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputAddressDialogFragment dialogFragment = InputAddressDialogFragment.newInstance();
+                dialogFragment.setOnAddListener(address -> {
+                    listAddress.add(address);
+                    addressAdapter.notifyDataSetChanged();
+                });
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "InputAddressDialogFragment");
+            }
+        });
 
         btnUpdate.setOnClickListener(v -> {
             if(edtPhoneNumber.getText().toString().isEmpty()) {
                 Toast.makeText(getContext(), "Vui lòng nhập số điện thoại", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if(edtAddress.getText().toString().isEmpty()) {
-                Toast.makeText(getContext(), "Vui lòng nhập địa chỉ", Toast.LENGTH_SHORT).show();
+            if(listAddress == null || listAddress.isEmpty() || listAddress.size() == 0) {
+                Toast.makeText(getContext(), "Vui lòng thêm địa chỉ", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -98,6 +140,7 @@ public class EditUserDialogFragment extends DialogFragment {
                 user.setAddress(edtAddress.getText().toString());
                 user.setFullName(edtUsername.getText().toString());
                 user.setActive(switchIsActive.isChecked());
+                user.setAddressNew(listAddress);
                 onUserUpdatedListener.onUserUpdated(user);
             }
             dismiss();

@@ -14,8 +14,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,6 +83,9 @@ public class CreateDeviceActivity extends AppCompatActivity {
     private AppCompatButton btnDownQR;
     private ImageView imgQR;
     private AppCompatTextView tvAddService;
+    private Spinner spinnerAddress;
+    private ArrayAdapter<String> addressAdapter;
+    private String selectedAddress;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -130,6 +136,7 @@ public class CreateDeviceActivity extends AppCompatActivity {
         btnDownQR = findViewById(R.id.btn_download_qr);
         tvAddService = findViewById(R.id.tv_add_service);
         edtPercent = findViewById(R.id.edt_percent);
+        spinnerAddress = findViewById(R.id.spinner_address);
         tvAddService.setVisibility(View.GONE);
 
 
@@ -160,7 +167,11 @@ public class CreateDeviceActivity extends AppCompatActivity {
                 registerDevice();
             }
         });
+        addressAdapter = new ArrayAdapter<>(this, R.layout.item_spinner_dropdown, new ArrayList<>());
+        addressAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAddress.setAdapter(addressAdapter);
 
+        updateSpinnerData();
         edtOwner.setOnClickViewMaskListener(new CustomEditText.OnClickViewMaskListener() {
             @Override
             public void onClickViewMask() {
@@ -171,11 +182,27 @@ public class CreateDeviceActivity extends AppCompatActivity {
                     public void onChoose(UserResponse.User user) {
                         userSelected = user;
                         edtOwner.setText(user.getFullName());
+                        updateSpinnerData();
                     }
                 });
 
             }
         });
+//        userSelected.getAddressNew()
+
+
+        spinnerAddress.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedAddress = (String) parent.getItemAtPosition(position);
+//                Toast.makeText(CreateDeviceActivity.this, "Đã chọn: " + selectedAddress, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
 
         edtMachineType.setOnClickViewMaskListener(new CustomEditText.OnClickViewMaskListener() {
             @Override
@@ -188,18 +215,18 @@ public class CreateDeviceActivity extends AppCompatActivity {
                         edtMachineType.setText(type);
                         switch (type) {
                             case "Máy giặt":
-                                    ServiceBottomSheet serviceBottomSheet = new ServiceBottomSheet();
-                                    serviceBottomSheet.show(getSupportFragmentManager(), serviceBottomSheet.getTag());
-                                    serviceBottomSheet.setOnSelected(new ServiceBottomSheet.OnTypeSelect() {
-                                        @Override
-                                        public void onChoose(List<Service> _listService) {
-                                            listService.clear();
-                                            listService.addAll(_listService);
-                                            tvAddService.setVisibility(View.VISIBLE);
-                                            tvCount.setText("Số dịch vụ đã thêm: " + listService.size());
-                                            selectServiceAdapter.notifyDataSetChanged();
-                                        }
-                                    });
+                                ServiceBottomSheet serviceBottomSheet = new ServiceBottomSheet();
+                                serviceBottomSheet.show(getSupportFragmentManager(), serviceBottomSheet.getTag());
+                                serviceBottomSheet.setOnSelected(new ServiceBottomSheet.OnTypeSelect() {
+                                    @Override
+                                    public void onChoose(List<Service> _listService) {
+                                        listService.clear();
+                                        listService.addAll(_listService);
+                                        tvAddService.setVisibility(View.VISIBLE);
+                                        tvCount.setText("Số dịch vụ đã thêm: " + listService.size());
+                                        selectServiceAdapter.notifyDataSetChanged();
+                                    }
+                                });
                                 break;
                             case "Thang máy":
 //                                edtDeviceType.setText("Thang máy");
@@ -213,7 +240,7 @@ public class CreateDeviceActivity extends AppCompatActivity {
         tvAddService.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!listService.isEmpty()) {
+                if (!listService.isEmpty()) {
                     Service service = listService.get(0);
 
                     ServiceBottomSheet serviceBottomSheet = new ServiceBottomSheet(service, listService);
@@ -254,6 +281,28 @@ public class CreateDeviceActivity extends AppCompatActivity {
         }
     }
 
+    private void updateSpinnerData() {
+        List<String> addresses = new ArrayList<>();
+
+        if (userSelected == null) {
+            addresses.add("Chọn địa chỉ"); // Hint ban đầu khi chưa chọn Owner
+        } else {
+            addresses.addAll(userSelected.getAddressNew());
+            if(userSelected.getAddressNew().size() > 0) {
+                selectedAddress = userSelected.getAddressNew().get(0);
+            }
+            if (addresses.isEmpty()) {
+                addresses.add("Không có địa chỉ");
+            }
+        }
+
+        addressAdapter.clear();
+        addressAdapter.addAll(addresses);
+        spinnerAddress.setSelection(0); // Luôn chọn item đầu tiên (hint hoặc địa chỉ đầu tiên)
+        addressAdapter.notifyDataSetChanged();
+    }
+
+
     public void updateEditedService(Service updatedService) {
         for (int i = 0; i < listService.size(); i++) {
             if (listService.get(i).getServiceName().equals(updatedService.getServiceName())) { // So sánh theo ID hoặc tiêu chí phù hợp
@@ -274,9 +323,9 @@ public class CreateDeviceActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<UserResponse> call, @NonNull Response<UserResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     UserResponse apiResponse = response.body();
-                    if(apiResponse.isSuccess()) {
+                    if (apiResponse.isSuccess()) {
                         userList.addAll(apiResponse.getData());
-                    }else {
+                    } else {
                         Toast.makeText(CreateDeviceActivity.this,
                                 apiResponse.getMessage(),
                                 Toast.LENGTH_LONG).show();
@@ -307,14 +356,15 @@ public class CreateDeviceActivity extends AppCompatActivity {
                 "",
                 "",
                 percent,
-                listService
+                listService,
+                selectedAddress
         );
 
-        Call<SimpleResult> call =  apiService.registerDevice("Bearer " + token, deviceRequest);
+        Call<SimpleResult> call = apiService.registerDevice("Bearer " + token, deviceRequest);
         call.enqueue(new Callback<SimpleResult>() {
             @Override
             public void onResponse(Call<SimpleResult> call, Response<SimpleResult> response) {
-                if(response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     Toast.makeText(CreateDeviceActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     lnlInfo.setVisibility(View.GONE);
                     lnlQR.setVisibility(View.VISIBLE);
@@ -322,7 +372,7 @@ public class CreateDeviceActivity extends AppCompatActivity {
 
                     initQR();
 //                    finish();
-                }else {
+                } else {
                     Toast.makeText(CreateDeviceActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -445,9 +495,14 @@ public class CreateDeviceActivity extends AppCompatActivity {
         }
         notificationManager.notify(1, builder.build());
     }
+
     private boolean validate() {
         if (edtOwner.getText().toString().isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập chủ thiết bị", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (selectedAddress == null || selectedAddress.isEmpty() || selectedAddress.equals("Chọn địa chỉ")) {
+            Toast.makeText(this, "Vui lòng chọn địa chỉ", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (edtDeviceName.getText().toString().isEmpty()) {
@@ -466,7 +521,7 @@ public class CreateDeviceActivity extends AppCompatActivity {
             Toast.makeText(this, "Vui lòng nhập loại thiết bị", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if(Float.parseFloat(edtPercent.getText().toString()) <= 0 || Float.parseFloat(edtPercent.getText().toString()) > 100) {
+        if (Float.parseFloat(edtPercent.getText().toString()) <= 0 || Float.parseFloat(edtPercent.getText().toString()) > 100) {
             Toast.makeText(this, "% trích lại/giao dịch phải trong khoản 0 -> 100", Toast.LENGTH_SHORT).show();
             return false;
         }

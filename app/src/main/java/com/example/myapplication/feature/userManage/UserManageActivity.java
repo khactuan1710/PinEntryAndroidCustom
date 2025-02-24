@@ -171,7 +171,8 @@ public class UserManageActivity extends AppCompatActivity {
                 updatedUser.getPhoneNumber(),                       // phoneNumber
                 updatedUser.getFullName(),                     // fullName
                 updatedUser.getAddress(), // address
-                updatedUser.isActive()                               // isActive
+                updatedUser.isActive(),
+                updatedUser.getAddressNew()
         );
 
         Call<SimpleResult> call = apiService.updateUser("Bearer " + token, updatedUser.getId(), updateUserRequest);
@@ -182,6 +183,7 @@ public class UserManageActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     SimpleResult apiResponse = response.body();
                     if(apiResponse.isSuccess()) {
+                        Toast.makeText(UserManageActivity.this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
                         getListUser();
                     }else {
                         Toast.makeText(UserManageActivity.this,

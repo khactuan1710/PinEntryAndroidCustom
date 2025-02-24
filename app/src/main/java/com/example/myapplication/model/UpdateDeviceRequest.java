@@ -8,7 +8,13 @@ public class UpdateDeviceRequest {
 
     private String deviceType;
     private String machineType;
+    private String address;
     private float percentAppDeducted;
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public void setDeviceType(String deviceType) {
         this.deviceType = deviceType;
     }

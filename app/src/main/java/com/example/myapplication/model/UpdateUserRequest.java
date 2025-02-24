@@ -1,16 +1,20 @@
 package com.example.myapplication.model;
 
+import java.util.List;
+
 public class UpdateUserRequest {
     private String phoneNumber;
     private String fullName;
     private String address;
     private boolean isActive;
+    private List<String> addressNew;
 
-    public UpdateUserRequest(String phoneNumber, String fullName, String address, boolean isActive) {
+    public UpdateUserRequest(String phoneNumber, String fullName, String address, boolean isActive, List<String> addressNew) {
         this.phoneNumber = phoneNumber;
         this.fullName = fullName;
         this.address = address;
         this.isActive = isActive;
+        this.addressNew = addressNew;
     }
 
     // Getters and Setters

@@ -9,6 +9,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -22,6 +24,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.CustomView.CustomEditText;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.adapter.DeviceAdapter;
@@ -52,9 +55,12 @@ public class UserDetailActivity extends AppCompatActivity {
     String token = "";
     RecyclerView recyclerView;
     private UserResponse.User user;
-    AppCompatTextView tvUsername, tvPhoneNumber, tvStatus ,tvAddress;
+    AppCompatTextView tvUsername, tvPhoneNumber, tvStatus ;
+    LinearLayout layoutAddress;
     AppCompatButton btnHistory, btnReport;
     ImageView ivBack;
+    private CustomEditText edtSearch;
+    private List<DeviceResponse.Device> originalDeviceList;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -71,10 +77,11 @@ public class UserDetailActivity extends AppCompatActivity {
         tvUsername = findViewById(R.id.tv_username);
         tvPhoneNumber = findViewById(R.id.tv_phone_number);
         tvStatus = findViewById(R.id.tv_status_active);
-        tvAddress = findViewById(R.id.tv_address);
         btnHistory = findViewById(R.id.btn_history);
         btnReport = findViewById(R.id.btn_report);
         ivBack = findViewById(R.id.iv_back);
+        layoutAddress = findViewById(R.id.layout_address);
+        edtSearch = findViewById(R.id.edt_search);
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,7 +129,35 @@ public class UserDetailActivity extends AppCompatActivity {
                 tvStatus.setText("Đang khoá");
                 tvStatus.setTextColor(Color.parseColor("#ff4b19"));
             }
-            tvAddress.setText(user.getAddress());
+
+            layoutAddress.removeAllViews();
+            List<String> addressList = user.getAddressNew();
+            if (addressList.isEmpty()) {
+                // Nếu không có địa chỉ, hiển thị TextView mặc định
+                TextView noAddressView = new TextView(this);
+                noAddressView.setText("Chưa có địa chỉ");
+                noAddressView.setTextSize(16);
+                noAddressView.setTextColor(Color.parseColor("#737373"));
+                layoutAddress.addView(noAddressView);
+            } else {
+                for (int i = 0; i < addressList.size(); i++) {
+                    TextView addressView = new TextView(this);
+                    addressView.setText(addressList.get(i));
+                    addressView.setTextSize(16);
+                    addressView.setTextColor(Color.parseColor("#282828"));
+
+                    // Áp dụng marginTop = 0 cho phần tử đầu tiên, còn lại là 8dp
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    params.setMargins(0, (i == 0) ? 0 : 8, 0, 0);
+                    addressView.setLayoutParams(params);
+
+                    layoutAddress.addView(addressView);
+                }
+            }
+
         }
 
         btnHistory.setOnClickListener(new View.OnClickListener() {
@@ -145,6 +180,34 @@ public class UserDetailActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        edtSearch.setOnTextChangeListener(new CustomEditText.OnTextChangeListener() {
+            @Override
+            public void onTextChange(String text) {
+                if (text != null && !text.isEmpty()) {
+                    // Lọc danh sách dựa trên shortName
+                    List<DeviceResponse.Device> filteredList = new ArrayList<>();
+                    for (DeviceResponse.Device device : originalDeviceList) {
+                        if (device.getDeviceFullName() != null &&
+                                device.getDeviceFullName().toLowerCase().contains(text.toLowerCase())) {
+                            filteredList.add(device);
+                        }
+                    }
+
+                    // Cập nhật lại danh sách và thông báo cho adapter
+                    deviceList.clear();
+                    deviceList.addAll(filteredList);
+                    deviceAdapter.notifyDataSetChanged();
+                }else {
+                    // Nếu không có văn bản tìm kiếm, hiển thị danh sách ban đầu
+                    deviceList.clear();
+                    deviceList.addAll(originalDeviceList);
+                    deviceAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+
         callGetListDevice();
     }
 
@@ -159,6 +222,7 @@ public class UserDetailActivity extends AppCompatActivity {
                     DeviceResponse apiResponse = response.body();
                     if(apiResponse.isSuccess()) {
                         deviceList.addAll(apiResponse.getData());
+                        originalDeviceList = new ArrayList<>(deviceList);
                         deviceAdapter.notifyDataSetChanged();
                     }else {
                         Toast.makeText(UserDetailActivity.this,

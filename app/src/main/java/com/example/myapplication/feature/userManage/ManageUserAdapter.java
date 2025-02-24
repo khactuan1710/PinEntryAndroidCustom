@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -49,7 +50,35 @@ public class ManageUserAdapter extends RecyclerView.Adapter<ManageUserAdapter.De
         UserResponse.User user = userList.get(position);
         holder.tvUsername.setText(user.getFullName());
         holder.tvPhoneNumber.setText(user.getPhoneNumber());
-        holder.tvAddress.setText(user.getAddress());
+//        holder.tvAddress.setText(user.getAddress());
+
+        holder.layoutAddress.removeAllViews();
+        List<String> addressList = user.getAddressNew();
+        if (addressList.isEmpty()) {
+            // Nếu không có địa chỉ, hiển thị TextView mặc định
+            TextView noAddressView = new TextView(holder.itemView.getContext());
+            noAddressView.setText("Chưa có địa chỉ");
+            noAddressView.setTextSize(16);
+            noAddressView.setTextColor(Color.parseColor("#737373"));
+            holder.layoutAddress.addView(noAddressView);
+        } else {
+            for (int i = 0; i < addressList.size(); i++) {
+                TextView addressView = new TextView(holder.itemView.getContext());
+                addressView.setText(addressList.get(i));
+                addressView.setTextSize(16);
+                addressView.setTextColor(Color.parseColor("#282828"));
+
+                // Áp dụng marginTop = 0 cho phần tử đầu tiên, còn lại là 8dp
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                params.setMargins(0, (i == 0) ? 0 : 8, 0, 0);
+                addressView.setLayoutParams(params);
+
+                holder.layoutAddress.addView(addressView);
+            }
+        }
 
         if(user.isActive()) {
             holder.tvStatusActive.setText("Hoạt động");
@@ -90,6 +119,7 @@ public class ManageUserAdapter extends RecyclerView.Adapter<ManageUserAdapter.De
         TextView tvAddress;
         ImageView ivEditUser;
         ImageView ivChangePass;
+        LinearLayout layoutAddress;
 
         public DeviceViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -99,6 +129,7 @@ public class ManageUserAdapter extends RecyclerView.Adapter<ManageUserAdapter.De
             tvAddress = itemView.findViewById(R.id.tv_address);
             ivEditUser = itemView.findViewById(R.id.tv_edit_user);
             ivChangePass = itemView.findViewById(R.id.tv_change_password);
+            layoutAddress = itemView.findViewById(R.id.layout_address);
         }
     }
 }

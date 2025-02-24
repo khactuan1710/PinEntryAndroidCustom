@@ -101,17 +101,22 @@
             android:textSize="14sp"
             android:text="Địa chỉ" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_address"
+        <LinearLayout
+            android:id="@+id/layout_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/color_282828"
-            android:textSize="16sp"
+            android:orientation="vertical"
             android:layout_marginStart="10dp"
-            android:layout_gravity="end"
             android:gravity="end"
-            android:layout_weight="1"
-            tools:text="Số 3, ngõ 27 Triều Khúc, Thanh Trì, Hà Nội " />
+            android:layout_weight="1">
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/color_282828"
+                android:textSize="16sp"
+                tools:text="Số 3, ngõ 27 Triều Khúc, Thanh Trì, Hà Nội  gõ 27 Triều Khúc, Thanh Trì, Hà Nội " />
+        </LinearLayout>
     </LinearLayout>
 
 

@@ -132,7 +132,7 @@
         android:id="@+id/edt_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:hint="Tìm máy giặt(mã máy, tên, sđt...)"
+        app:hint="Tìm máy giặt(mã máy, tên, sđt, địa chỉ)"
         app:inputType="text"
         app:showBgRadius="true"
         android:layout_marginTop="8dp"

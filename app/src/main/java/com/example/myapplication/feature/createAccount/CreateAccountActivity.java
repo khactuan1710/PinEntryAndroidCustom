@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -15,15 +16,20 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.CustomView.CustomEditText;
 import com.example.myapplication.R;
 import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
+import com.example.myapplication.feature.createDevice.SelectServiceAdapter;
+import com.example.myapplication.feature.userManage.EditUserDialogFragment;
 import com.example.myapplication.feature.userManage.UserManageActivity;
 import com.example.myapplication.model.BankCodeResponse;
 import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.RegisterRequest;
+import com.example.myapplication.model.Service;
 import com.example.myapplication.model.SimpleResult;
 import com.example.myapplication.util.SharedPreferencesUtil;
 
@@ -40,7 +46,11 @@ public class CreateAccountActivity extends AppCompatActivity {
     ApiService apiService;
     ImageView ivBack, ivReload;
     AppCompatButton btnAddAccount;
+    TextView tvAddAddress, tvCount;
+    RecyclerView rcvAddress;
+    private AddressAdapter addressAdapter;
     private List<BankCodeResponse.BankCode> bankCodeList = new ArrayList<>();
+    private List<String> listAddress;
     private String token;
     BankCodeResponse.BankCode bankCodeSelected;
 
@@ -55,7 +65,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         if (userData != null) {
             token = userData.getToken();
         }
-
+        listAddress = new ArrayList<>();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -76,11 +86,31 @@ public class CreateAccountActivity extends AppCompatActivity {
         ivBack = findViewById(R.id.iv_back);
         edtPercent = findViewById(R.id.edt_percent);
 
+        tvAddAddress = findViewById(R.id.tv_add_address);
+        rcvAddress = findViewById(R.id.rcv_data);
+        tvCount = findViewById(R.id.tv_count);
+
         edtWeLinkAcc.setText("khachuong.vn@gmail.com");
         edtWeLinkPass.setText("devup@2023");
 
         apiService = RetrofitClient.getInstance().create(ApiService.class);
         getBankCodes();
+
+        addressAdapter = new AddressAdapter(this, listAddress);
+        rcvAddress.setLayoutManager(new LinearLayoutManager(this));
+        rcvAddress.setAdapter(addressAdapter);
+
+        tvAddAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputAddressDialogFragment dialogFragment = InputAddressDialogFragment.newInstance();
+                dialogFragment.setOnAddListener(address -> {
+                    listAddress.add(address);
+                    addressAdapter.notifyDataSetChanged();
+                });
+                dialogFragment.show(getSupportFragmentManager(), "InputAddressDialogFragment");
+            }
+        });
 
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,7 +177,8 @@ public class CreateAccountActivity extends AppCompatActivity {
                 bankCode,
                 edtSTK.getText().toString(),
                 edtSTKName.getText().toString(),
-                typeAccount.getText().toString().equals("Admin")? "admin" : "host"
+                typeAccount.getText().toString().equals("Admin")? "admin" : "host",
+                listAddress
         );
 
         Call<SimpleResult> call = apiService.register("Bearer " + token, request);
@@ -187,8 +218,8 @@ public class CreateAccountActivity extends AppCompatActivity {
             return false;
         }
 
-        if(edtAddress.getText().toString().isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập địa chỉ", Toast.LENGTH_SHORT).show();
+        if(listAddress == null || listAddress.isEmpty() || listAddress.size() == 0) {
+            Toast.makeText(this, "Vui lòng thêm địa chỉ", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -250,6 +281,12 @@ public class CreateAccountActivity extends AppCompatActivity {
                 Toast.makeText(CreateAccountActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+    }
+
+    public void updateAddressList(String removedAddress) {
+        listAddress.remove(removedAddress);
+        tvCount.setText("Địa chỉ: " + listAddress.size());
 
     }
 }

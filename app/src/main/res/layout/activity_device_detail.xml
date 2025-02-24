@@ -140,6 +140,15 @@
                     app:inputType="text"
                     />
 
+                <Spinner
+                    android:id="@+id/spinner_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:layout_marginTop="8dp"
+                    android:contentDescription="Chọn địa chỉ"
+                    />
+
                 <com.example.myapplication.CustomView.CustomEditText
                     android:id="@+id/edtDeviceType"
                     android:layout_width="match_parent"

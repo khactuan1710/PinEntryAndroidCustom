@@ -50,6 +50,7 @@ import com.example.myapplication.webview.WebViewActivity;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +102,21 @@ public class MainActivity extends AppCompatActivity {
         buttonUserManage = findViewById(R.id.btn_user_manage);
         buttonAddDevice = findViewById(R.id.btn_addDevice);
         edtSearch = findViewById(R.id.edt_search);
+
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Fetching FCM token failed", task.getException());
+                        return;
+                    }
+
+                    String token = task.getResult();
+                    Log.d("FCM", "Token: " + token);
+//                    Toast.makeText(MainActivity.this, "FCM Token: " + token, Toast.LENGTH_LONG).show();
+                });
+
+
         buttonAddDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

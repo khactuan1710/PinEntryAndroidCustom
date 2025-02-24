@@ -109,9 +109,41 @@
                 android:layout_height="wrap_content"
                 app:hint="Địa chỉ"
                 app:inputType="text"
+                android:visibility="gone"
                 android:layout_marginTop="8dp"
                 android:layout_marginHorizontal="12dp"
                 />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_count"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Địa chỉ: 0"
+                android:textColor="@color/color_44494D"
+                android:textSize="14sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcv_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                tools:listitem="@layout/item_address"
+                tools:itemCount="3"
+                />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_add_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thêm Địa chỉ"
+                android:drawableLeft="@drawable/ic_add"
+                android:layout_marginTop="12dp"
+                android:padding="12dp"
+                android:drawablePadding="5dp"
+                android:background="@drawable/bg_white_radius_8"
+                android:layout_gravity="center"
+                android:gravity="center"/>
 
             <com.example.myapplication.CustomView.CustomEditText
                 android:id="@+id/edt_percent"
