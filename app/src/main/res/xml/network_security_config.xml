@@ -9,5 +9,7 @@
         <domain includeSubdomains="true">10.10.250.70</domain>
         <domain includeSubdomains="true">10.10.112.93</domain>
         <domain includeSubdomains="true">10.10.112.24</domain>
+        <domain includeSubdomains="true">10.10.112.175</domain>
+        <domain includeSubdomains="true">10.10.112.106</domain>
     </domain-config>
 </network-security-config>

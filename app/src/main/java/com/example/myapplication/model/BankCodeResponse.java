@@ -1,9 +1,10 @@
 package com.example.myapplication.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BankCodeResponse {
+public class BankCodeResponse implements Serializable{
     private List<BankCode> data;
     private boolean isSuccess;
     private String message;
@@ -20,7 +21,7 @@ public class BankCodeResponse {
         return message;
     }
 
-    public static class BankCode {
+    public static class BankCode implements Serializable {
         private String bin;
         private String code;
         private int isTransfer;

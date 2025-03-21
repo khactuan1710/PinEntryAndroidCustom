@@ -28,6 +28,7 @@ import com.example.myapplication.api.ApiService;
 import com.example.myapplication.api.RetrofitClient;
 import com.example.myapplication.feature.createAccount.CreateAccountActivity;
 import com.example.myapplication.feature.userDetail.UserDetailActivity;
+import com.example.myapplication.model.BankCodeResponse;
 import com.example.myapplication.model.ChangePasswordRequest;
 import com.example.myapplication.model.DeviceResponse;
 import com.example.myapplication.model.LoginResponse;
@@ -56,6 +57,8 @@ public class UserManageActivity extends AppCompatActivity {
     private List<UserResponse.User> originalList;
     private ManageUserAdapter manageUserAdapter;
     private CustomEditText edtSearch;
+    private List<BankCodeResponse.BankCode> bankCodeList = new ArrayList<>();
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +89,7 @@ public class UserManageActivity extends AppCompatActivity {
 
             @Override
             public void onEdit(UserResponse.User user) {
-                EditUserDialogFragment dialogFragment = EditUserDialogFragment.newInstance(user);
+                EditUserDialogFragment dialogFragment = EditUserDialogFragment.newInstance(user, bankCodeList);
                 dialogFragment.setOnUserUpdatedListener(updatedUser -> {
                     // Xử lý logic cập nhật người dùng ở đây
                     updateUserInDatabase(updatedUser); // Hàm tự định nghĩa để cập nhật dữ liệu
@@ -142,6 +145,7 @@ public class UserManageActivity extends AppCompatActivity {
 
 
         apiService = RetrofitClient.getInstance().create(ApiService.class);
+        getBankCodes();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -166,13 +170,42 @@ public class UserManageActivity extends AppCompatActivity {
 
     }
 
+    private void getBankCodes() {
+        Call<BankCodeResponse> call = apiService.getBankCodes();
+
+        call.enqueue(new Callback<BankCodeResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<BankCodeResponse> call, @NonNull Response<BankCodeResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    BankCodeResponse apiResponse = response.body();
+                    if(apiResponse.isSuccess()) {
+                        bankCodeList = apiResponse.getData();
+                    }else {
+                        Toast.makeText(UserManageActivity.this,
+                                apiResponse.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BankCodeResponse> call, Throwable t) {
+                Toast.makeText(UserManageActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
     private void updateUserInDatabase(UserResponse.User updatedUser) {
         UpdateUserRequest updateUserRequest = new UpdateUserRequest(
                 updatedUser.getPhoneNumber(),                       // phoneNumber
                 updatedUser.getFullName(),                     // fullName
                 updatedUser.getAddress(), // address
                 updatedUser.isActive(),
-                updatedUser.getAddressNew()
+                updatedUser.getAddressNew(),
+                updatedUser.getBankCode(),
+                updatedUser.getBankAccountNumber(),
+                updatedUser.getBankAccountName()
         );
 
         Call<SimpleResult> call = apiService.updateUser("Bearer " + token, updatedUser.getId(), updateUserRequest);

@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/bg_white_radius_8"
     android:orientation="vertical"
     android:padding="16dp">
@@ -12,12 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:layout_marginVertical="16dp"
             android:gravity="center"
-            android:layout_centerInParent="true"
             android:text="Cập nhật thông tin"
             android:textColor="@color/color_282828"
             android:textSize="20sp"
@@ -28,8 +29,8 @@
             android:id="@+id/iv_close"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_margin="10dp"
             android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="10dp"
             android:src="@drawable/ic_bsim_close"
@@ -40,35 +41,35 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <com.example.myapplication.CustomView.CustomEditText
                 android:id="@+id/edtPhoneNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:hint="Số điện thoại"
-                app:inputType="text"
-                />
+                app:inputType="text" />
 
             <com.example.myapplication.CustomView.CustomEditText
                 android:id="@+id/edtAddress"
-                android:layout_marginTop="12dp"
                 android:layout_width="match_parent"
-                android:visibility="gone"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:visibility="gone"
                 app:hint="Địa chỉ"
-                app:inputType="text"
-                />
+                app:inputType="text" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_count"
-                android:layout_marginTop="12dp"
-                android:layout_marginStart="12dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
                 android:text="Địa chỉ: 0"
                 android:textColor="@color/color_44494D"
                 android:textSize="14sp" />
@@ -78,29 +79,59 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                tools:listitem="@layout/item_address"
                 tools:itemCount="3"
-                />
+                tools:listitem="@layout/item_address" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_add_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thêm Địa chỉ"
-                android:drawableLeft="@drawable/ic_add"
-                android:layout_marginTop="12dp"
-                android:padding="12dp"
-                android:drawablePadding="5dp"
-                android:background="@drawable/bg_gray2_radius_8"
                 android:layout_gravity="center"
-                android:gravity="center"/>
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_gray2_radius_8"
+                android:drawableLeft="@drawable/ic_add"
+                android:drawablePadding="5dp"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="Thêm Địa chỉ" />
 
             <com.example.myapplication.CustomView.CustomEditText
                 android:id="@+id/edtUsername"
-                android:layout_marginTop="12dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 app:hint="Tên người dùng"
+                app:inputType="text" />
+
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/bankCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Chọn ngân hàng"
+                app:showClearButton="false"
+                app:clickViewEnable="true"
+                app:endIcon="@drawable/arrow_drop_down_address"
                 app:inputType="text"
+                app:multiLine="true"
+                app:isMultiLine="true"
+                android:layout_marginTop="8dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edtSTK"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Số tài khoản"
+                app:inputType="text"
+                android:layout_marginTop="8dp"
+                />
+            <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edtSTKName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Tên người dùng ngân hàng"
+                app:inputType="text"
+                app:imeOptions="actionDone"
+                android:layout_marginTop="8dp"
                 />
 
             <Switch

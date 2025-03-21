@@ -8,13 +8,19 @@ public class UpdateUserRequest {
     private String address;
     private boolean isActive;
     private List<String> addressNew;
+    private String bankCode;
+    private String bankAccountNumber;
+    private String bankAccountName;
 
-    public UpdateUserRequest(String phoneNumber, String fullName, String address, boolean isActive, List<String> addressNew) {
+    public UpdateUserRequest(String phoneNumber, String fullName, String address, boolean isActive, List<String> addressNew, String bankCode, String bankAccountNumber, String bankAccountName) {
         this.phoneNumber = phoneNumber;
         this.fullName = fullName;
         this.address = address;
         this.isActive = isActive;
         this.addressNew = addressNew;
+        this.bankCode = bankCode;
+        this.bankAccountNumber = bankAccountNumber;
+        this.bankAccountName = bankAccountName;
     }
 
     // Getters and Setters

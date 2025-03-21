@@ -30,6 +30,33 @@ public class UserResponse {
         private String type;
         private String username;
         private List<String> addressNew;
+        private String bankCode;
+        private String bankAccountNumber;
+        private String bankAccountName;
+
+        public String getBankCode() {
+            return bankCode == null? "": bankCode;
+        }
+
+        public void setBankCode(String bankCode) {
+            this.bankCode = bankCode;
+        }
+
+        public String getBankAccountNumber() {
+            return bankAccountNumber ==null? "": bankAccountNumber;
+        }
+
+        public void setBankAccountNumber(String bankAccountNumber) {
+            this.bankAccountNumber = bankAccountNumber;
+        }
+
+        public String getBankAccountName() {
+            return bankAccountName == null? "": bankAccountName;
+        }
+
+        public void setBankAccountName(String bankAccountName) {
+            this.bankAccountName = bankAccountName;
+        }
 
         public List<String> getAddressNew() {
             return addressNew == null? new ArrayList<>(): addressNew;
