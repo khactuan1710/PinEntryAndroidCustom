@@ -40,6 +40,15 @@ public class SelectServiceAdapter extends RecyclerView.Adapter<SelectServiceAdap
         this.serviceList = serviceList;
     }
 
+    private boolean isAdmin;
+
+    public SelectServiceAdapter(Context context, List<Service> serviceList, boolean isAdmin) {
+        this.context = context;
+        this.serviceList = serviceList;
+        this.isAdmin = isAdmin;
+    }
+
+
 
     @NonNull
     @Override
@@ -54,6 +63,14 @@ public class SelectServiceAdapter extends RecyclerView.Adapter<SelectServiceAdap
         holder.tvServiceName.setText("Tên dịch vụ: " + service.getServiceName());
         holder.tvPrice.setText("Giá: " + CurrencyUtils.formatCurrency(service.getPrice()));
         holder.tvTime.setText("Thời gian hoạt động: " + service.getTotalMinutes() + " phút");
+
+        if (isAdmin) {
+            holder.ic_delete.setVisibility(View.VISIBLE);
+            holder.ic_edit.setVisibility(View.VISIBLE);
+        } else {
+            holder.ic_delete.setVisibility(View.GONE);
+            holder.ic_edit.setVisibility(View.GONE);
+        }
 
         holder.ic_delete.setOnClickListener(new View.OnClickListener() {
             @Override

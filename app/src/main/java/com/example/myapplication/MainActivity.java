@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     AppCompatTextView tvFullName;
     RecyclerView recyclerView;
 
-    AppCompatButton buttonUserManage, buttonAddDevice;;
+    AppCompatButton buttonUserManage, buttonAddDevice, btnReport;
     String token = "";
     String fullname = "";
 
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private List<DeviceResponse.Device> originalDeviceList;
     private DeviceAdapter deviceAdapter;
     private ApiService apiService;
-    private CustomEditText edtSearch;
+    private CustomEditText edtSearch, edtMinus;
 
     LoginResponse.Data userData;
     @SuppressLint("MissingInflatedId")
@@ -102,6 +102,17 @@ public class MainActivity extends AppCompatActivity {
         buttonUserManage = findViewById(R.id.btn_user_manage);
         buttonAddDevice = findViewById(R.id.btn_addDevice);
         edtSearch = findViewById(R.id.edt_search);
+        btnReport = findViewById(R.id.btn_report);
+        edtMinus = findViewById(R.id.edt_default_minus);
+        int defaultMinutes = SharedPreferencesUtil.getDefaultMinutes(this);
+        edtMinus.setText(String.valueOf(defaultMinutes));
+        edtMinus.setOnTextChangeListener(s -> {
+            try {
+                int newMinutes = Integer.parseInt(s.trim());
+                SharedPreferencesUtil.saveDefaultMinutes(this, newMinutes);
+            } catch (NumberFormatException e) {
+            }
+        });
 
 
         FirebaseMessaging.getInstance().getToken()
@@ -122,6 +133,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, CreateDeviceActivity.class);
                 startActivityForResult(intent, 888);
+            }
+        });
+
+        btnReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+                intent.putExtra("url", BASE_URL + "/report?hostID=" + userData.getUserID());
+                intent.putExtra("header", "Báo cáo/thống kê");
+                intent.putExtra("token", token);
+                startActivity(intent);
             }
         });
 
@@ -217,9 +239,12 @@ public class MainActivity extends AppCompatActivity {
         if (userData != null && !userData.getType().equals("admin")) {
             buttonUserManage.setVisibility(View.GONE);
             buttonAddDevice.setVisibility(View.GONE);
+            btnReport.setVisibility(View.VISIBLE);
+
         }else if(userData == null) {
             buttonUserManage.setVisibility(View.GONE);
             buttonAddDevice.setVisibility(View.GONE);
+            btnReport.setVisibility(View.GONE);
         }
         buttonUserManage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -317,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callAPIOnOff(int isOnOff, String deviceId, ApiService apiService) {
-        DeviceRequest deviceRequest = new DeviceRequest(deviceId, isOnOff);
+        DeviceRequest deviceRequest = new DeviceRequest(deviceId, isOnOff, getDefaultMinutesFromEditText());
 
         Call<ApiResponse> call = apiService.toggleDevice("Bearer " + token, deviceRequest);
 
@@ -345,6 +370,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    public int getDefaultMinutesFromEditText() {
+        String input = edtMinus.getText().trim();
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
 
     private void startSmsRetriever() {
         SmsRetrieverClient client = SmsRetriever.getClient(this);

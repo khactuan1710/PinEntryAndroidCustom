@@ -213,12 +213,23 @@
             </LinearLayout>
 
             <com.example.myapplication.CustomView.CustomEditText
+                android:id="@+id/edt_default_minus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint="Số phút bật mặc định"
+                app:inputType="number"
+                app:maxLength="3"
+                app:layout_constraintTop_toBottomOf="@id/lnl_action"
+                />
+
+            <com.example.myapplication.CustomView.CustomEditText
                 android:id="@+id/edt_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:hint="Tìm máy giặt(mã máy, tên, sđt, địa chỉ)"
                 app:inputType="text"
-                app:layout_constraintTop_toBottomOf="@id/lnl_action"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/edt_default_minus"
                 app:showBgRadius="true"
                 />
 

@@ -37,4 +37,17 @@ public class SharedPreferencesUtil {
         editor.remove(USER_DATA_KEY);
         editor.apply();
     }
+
+    private static final String DEFAULT_MINUTES_KEY = "DEFAULT_MINUTES";
+
+    public static void saveDefaultMinutes(Context context, int minutes) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putInt(DEFAULT_MINUTES_KEY, minutes).apply();
+    }
+
+    public static int getDefaultMinutes(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getInt(DEFAULT_MINUTES_KEY, 55); // Mặc định là 48
+    }
+
 }

@@ -59,7 +59,7 @@ public class UserDetailActivity extends AppCompatActivity {
     LinearLayout layoutAddress;
     AppCompatButton btnHistory, btnReport;
     ImageView ivBack;
-    private CustomEditText edtSearch;
+    private CustomEditText edtSearch, edtMinus;
     private List<DeviceResponse.Device> originalDeviceList;
 
     @SuppressLint("MissingInflatedId")
@@ -82,6 +82,19 @@ public class UserDetailActivity extends AppCompatActivity {
         ivBack = findViewById(R.id.iv_back);
         layoutAddress = findViewById(R.id.layout_address);
         edtSearch = findViewById(R.id.edt_search);
+        edtMinus = findViewById(R.id.edt_default_minus);
+
+        int defaultMinutes = SharedPreferencesUtil.getDefaultMinutes(this);
+        edtMinus.setText(String.valueOf(defaultMinutes));
+        edtMinus.setOnTextChangeListener(s -> {
+            try {
+                int newMinutes = Integer.parseInt(s.trim());
+                SharedPreferencesUtil.saveDefaultMinutes(this, newMinutes);
+            } catch (NumberFormatException e) {
+            }
+        });
+
+
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -211,6 +224,15 @@ public class UserDetailActivity extends AppCompatActivity {
         callGetListDevice();
     }
 
+    public int getDefaultMinutesFromEditText() {
+        String input = edtMinus.getText().trim();
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
     private void callGetListDevice() {
 
         Call<DeviceResponse> call = apiService.getDevicesByHost("Bearer " + token, user.getId());
@@ -242,7 +264,7 @@ public class UserDetailActivity extends AppCompatActivity {
     }
 
     private void callAPIOnOff(int isOnOff, String deviceId, ApiService apiService) {
-        DeviceRequest deviceRequest = new DeviceRequest(deviceId, isOnOff);
+        DeviceRequest deviceRequest = new DeviceRequest(deviceId, isOnOff, getDefaultMinutesFromEditText());
 
         Call<ApiResponse> call = apiService.toggleDevice("Bearer " + token, deviceRequest);
 

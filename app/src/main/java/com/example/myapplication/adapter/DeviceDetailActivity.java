@@ -156,7 +156,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             tv_lb.setVisibility(View.VISIBLE);
 
             tvAddService.setVisibility(View.VISIBLE);
-            rcv_data.setVisibility(View.VISIBLE);
+//            rcv_data.setVisibility(View.VISIBLE);
             edtPercent.setVisibility(View.VISIBLE);
             edtServiceType.setVisibility(View.VISIBLE);
             edtDeviceType.setVisibility(View.VISIBLE);
@@ -166,7 +166,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             tv_lb.setVisibility(View.GONE);
 
             tvAddService.setVisibility(View.GONE);
-            rcv_data.setVisibility(View.GONE);
+//            rcv_data.setVisibility(View.GONE);
             edtPercent.setVisibility(View.GONE);
             edtServiceType.setVisibility(View.GONE);
             edtDeviceType.setVisibility(View.GONE);
@@ -186,9 +186,11 @@ public class DeviceDetailActivity extends AppCompatActivity {
             }
         }
 
-        selectServiceAdapter = new SelectServiceAdapter(this, listService);
+        boolean isAdmin = userData != null && "admin".equals(userData.getType());
+        selectServiceAdapter = new SelectServiceAdapter(this, listService, isAdmin);
         rcv_data.setLayoutManager(new LinearLayoutManager(this));
         rcv_data.setAdapter(selectServiceAdapter);
+
 
         String deviceName = device.getDeviceName();
         String url = "https://iot.mimi.sg/?maMayGiat=" + deviceName;  // Chuỗi URL với tên máy giặt
