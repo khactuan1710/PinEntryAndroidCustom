@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     AppCompatTextView tvFullName;
     RecyclerView recyclerView;
 
-    AppCompatButton buttonUserManage, buttonAddDevice, btnReport;
+    AppCompatButton buttonUserManage, buttonAddDevice, btnReport, btnReportAdmin;
     String token = "";
     String fullname = "";
 
@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         buttonAddDevice = findViewById(R.id.btn_addDevice);
         edtSearch = findViewById(R.id.edt_search);
         btnReport = findViewById(R.id.btn_report);
+        btnReportAdmin = findViewById(R.id.btn_report_admin);
         edtMinus = findViewById(R.id.edt_default_minus);
         int defaultMinutes = SharedPreferencesUtil.getDefaultMinutes(this);
         edtMinus.setText(String.valueOf(defaultMinutes));
@@ -146,6 +147,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        btnReportAdmin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+                intent.putExtra("url", BASE_URL + "/admin/report?hostID=" + userData.getUserID());
+                intent.putExtra("header", "Báo cáo/thống kê");
+                intent.putExtra("token", token);
+                startActivity(intent);
+            }
+        });
+
 
         edtSearch.setOnTextChangeListener(new CustomEditText.OnTextChangeListener() {
             @Override
@@ -245,6 +258,12 @@ public class MainActivity extends AppCompatActivity {
             buttonUserManage.setVisibility(View.GONE);
             buttonAddDevice.setVisibility(View.GONE);
             btnReport.setVisibility(View.GONE);
+        }
+
+        if (userData.getType().equals("admin")) {
+            btnReportAdmin.setVisibility(View.VISIBLE);
+        } else {
+            btnReportAdmin.setVisibility(View.GONE);
         }
         buttonUserManage.setOnClickListener(new View.OnClickListener() {
             @Override

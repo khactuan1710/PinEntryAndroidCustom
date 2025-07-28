@@ -9,7 +9,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     private static Retrofit retrofit;
-//    public static String BASE_URL = "http://10.10.112.123:5001";
+//    public static String BASE_URL = "http://10.0.2.2:5001";
+
     public static String BASE_URL = "https://iot.mimi.sg";
 
     public static Retrofit getInstance() {
