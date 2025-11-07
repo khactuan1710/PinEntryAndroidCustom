@@ -193,7 +193,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
 
 
         String deviceName = device.getDeviceName();
-        String url = "https://iot.mimi.sg/?maMayGiat=" + deviceName;  // Chuỗi URL với tên máy giặt
+        String url = "https://maygiat.online/?maMayGiat=" + deviceName;  // Chuỗi URL với tên máy giặt
 
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         try {

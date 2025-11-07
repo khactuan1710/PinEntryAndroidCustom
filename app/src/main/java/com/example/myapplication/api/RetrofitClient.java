@@ -11,7 +11,7 @@ public class RetrofitClient {
     private static Retrofit retrofit;
 //    public static String BASE_URL = "http://10.0.2.2:5001";
 
-    public static String BASE_URL = "https://iot.mimi.sg";
+    public static String BASE_URL = "https://maygiat.online";
 
     public static Retrofit getInstance() {
         if (retrofit == null) {

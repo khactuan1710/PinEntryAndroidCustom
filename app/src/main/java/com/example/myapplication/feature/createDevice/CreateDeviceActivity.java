@@ -385,7 +385,7 @@ public class CreateDeviceActivity extends AppCompatActivity {
     }
 
     private void initQR() {
-        String url = "https://iot.mimi.sg/?maMayGiat=" + edtDeviceName.getText();  // Chuỗi URL với tên máy giặt
+        String url = "https://maygiat.online/?maMayGiat=" + edtDeviceName.getText();  // Chuỗi URL với tên máy giặt
 
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         try {
