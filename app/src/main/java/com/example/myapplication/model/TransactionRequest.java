@@ -6,6 +6,7 @@ public class TransactionRequest {
     private String smsContent;
     private String smsFull;
     private String sender;
+    private String deviceId; // ID của thiết bị
 
     public void setSender(String sender) {
         this.sender = sender;
@@ -51,6 +52,14 @@ public class TransactionRequest {
 
     public void setSmsContent(String smsContent) {
         this.smsContent = smsContent;
+    }
+    
+    public String getDeviceId() {
+        return deviceId;
+    }
+    
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 }
 

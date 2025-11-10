@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.CountDownTimer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -27,7 +28,9 @@ import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.model.TransactionInfo;
 import com.example.myapplication.model.TransactionRequest;
 import com.example.myapplication.model.TransactionResponse;
+import com.example.myapplication.model.TransactionResponse2;
 import com.example.myapplication.util.SharedPreferencesUtil;
+import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +49,10 @@ public class SocketService extends Service {
 
     private Socket mSocket;
     public static final String CHANNEL_ID = "socket_channel_id";
+    public static final String DEVICE_STATUS_ACTION = "com.example.myapplication.DEVICE_STATUS_UPDATE";
+    
+    // Map để lưu trữ CountDownTimer cho từng thiết bị
+    private HashMap<String, CountDownTimer> deviceTimers = new HashMap<>();
     private String socketUrl = "http://192.168.1.5:8080";
 
     @Override
@@ -265,10 +272,10 @@ public class SocketService extends Service {
 
 
     // Thêm lớp AsyncTask để thực hiện các tác vụ mạng ngoài main thread
-    private class TransactionTask extends AsyncTask<TransactionRequest, Void, TransactionResponse> {
+    private class TransactionTask extends AsyncTask<TransactionRequest, Void, TransactionResponse2> {
 
         @Override
-        protected TransactionResponse doInBackground(TransactionRequest... transactionRequests) {
+        protected TransactionResponse2 doInBackground(TransactionRequest... transactionRequests) {
             ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
 
             String token = "";
@@ -285,13 +292,13 @@ public class SocketService extends Service {
             // Lấy transactionRequest từ tham số đầu vào
             TransactionRequest transactionRequest = transactionRequests[0];
 
-            Call<TransactionResponse> call = apiService.createTransaction("Bearer " + token, transactionRequest);
+            Call<TransactionResponse2> call = apiService.createTransaction("Bearer " + token, transactionRequest);
 
             try {
                 // Thực hiện gọi API đồng bộ trong doInBackground()
-                Response<TransactionResponse> response = call.execute();
+                Response<TransactionResponse2> response = call.execute();
                 if (response.isSuccessful() && response.body() != null) {
-                    return response.body();  // Trả về TransactionResponse nếu thành công
+                    return response.body();  // Trả về TransactionResponse2 nếu thành công
                 } else {
                     return null;  // Trả về null nếu thất bại
                 }
@@ -302,23 +309,38 @@ public class SocketService extends Service {
         }
 
         @Override
-        protected void onPostExecute(TransactionResponse transactionResponse) {
+        protected void onPostExecute(TransactionResponse2 transactionResponse) {
             super.onPostExecute(transactionResponse);
-            if (transactionResponse != null) {
-                // Gọi UI update sau khi API call hoàn tất
-//                Log.d("ApiService2", "Transaction success: " + transactionResponse.getMessage());
-//                showToast("Transaction success: " + transactionResponse.getMessage());
+            if (transactionResponse != null && transactionResponse.isSuccess()) {
+                Log.d("TransactionTask", "Transaction success: " + transactionResponse.getMessage());
+                
+                // Lấy thông tin từ response
+                if (transactionResponse.getData() != null) {
+                    int durationMinutes = transactionResponse.getData().getDurationMinutes();
+                    boolean isCompleteOrder = transactionResponse.getData().isCompleteOrder();
+                    int remainAmount = transactionResponse.getData().getRemainAmount();
+                    
+                    // Lấy mã máy giặt từ response
+                    String deviceId = transactionResponse.getData().getMaMayGiat();
+                    
+                    // Gửi broadcast để cập nhật UI
+                    if (deviceId != null && !deviceId.isEmpty()) {
+                        sendDeviceStatusBroadcast(deviceId, durationMinutes);
+                        Log.d("TransactionTask", "Starting device: " + deviceId + " for " + durationMinutes + " minutes");
+                    } else {
+                        Log.e("TransactionTask", "Device ID is missing in response");
+                    }
+                }
             } else {
-//                Log.e("ApiService2", "Transaction failed");
-//                showToast("Transaction failed");
+                Log.e("TransactionTask", "Transaction failed or response is null");
             }
         }
     }
 
-    private class TransactionTask2 extends AsyncTask<TransactionRequest, Void, TransactionResponse> {
+    private class TransactionTask2 extends AsyncTask<TransactionRequest, Void, TransactionResponse2> {
 
         @Override
-        protected TransactionResponse doInBackground(TransactionRequest... transactionRequests) {
+        protected TransactionResponse2 doInBackground(TransactionRequest... transactionRequests) {
             ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
 
             String token = "";
@@ -330,13 +352,13 @@ public class SocketService extends Service {
 
             TransactionRequest transactionRequest = transactionRequests[0];
 
-            Call<TransactionResponse> call = apiService.createTransaction("Bearer " + token, transactionRequest);
+            Call<TransactionResponse2> call = apiService.createTransaction("Bearer " + token, transactionRequest);
 
             try {
                 // Thực hiện gọi API đồng bộ trong doInBackground()
-                Response<TransactionResponse> response = call.execute();
+                Response<TransactionResponse2> response = call.execute();
                 if (response.isSuccessful() && response.body() != null) {
-                    return response.body();  // Trả về TransactionResponse nếu thành công
+                    return response.body();  // Trả về TransactionResponse2 nếu thành công
                 } else {
                     return null;  // Trả về null nếu thất bại
                 }
@@ -347,15 +369,30 @@ public class SocketService extends Service {
         }
 
         @Override
-        protected void onPostExecute(TransactionResponse transactionResponse) {
+        protected void onPostExecute(TransactionResponse2 transactionResponse) {
             super.onPostExecute(transactionResponse);
-            if (transactionResponse != null) {
-                // Gọi UI update sau khi API call hoàn tất
-//                Log.d("ApiService2", "Transaction success: " + transactionResponse.getMessage());
-//                showToast("Transaction success: " + transactionResponse.getMessage());
+            if (transactionResponse != null && transactionResponse.isSuccess()) {
+                Log.d("TransactionTask2", "Transaction success: " + transactionResponse.getMessage());
+                
+                // Lấy thông tin từ response
+                if (transactionResponse.getData() != null) {
+                    int durationMinutes = transactionResponse.getData().getDurationMinutes();
+                    boolean isCompleteOrder = transactionResponse.getData().isCompleteOrder();
+                    int remainAmount = transactionResponse.getData().getRemainAmount();
+                    
+                    // Lấy mã máy giặt từ response
+                    String deviceId = transactionResponse.getData().getMaMayGiat();
+                    
+                    // Gửi broadcast để cập nhật UI
+                    if (deviceId != null && !deviceId.isEmpty()) {
+                        sendDeviceStatusBroadcast(deviceId, durationMinutes);
+                        Log.d("TransactionTask2", "Starting device: " + deviceId + " for " + durationMinutes + " minutes");
+                    } else {
+                        Log.e("TransactionTask2", "Device ID is missing in response");
+                    }
+                }
             } else {
-//                Log.e("ApiService2", "Transaction failed");
-//                showToast("Transaction failed");
+                Log.e("TransactionTask2", "Transaction failed or response is null");
             }
         }
     }
@@ -364,6 +401,62 @@ public class SocketService extends Service {
 
     private void showToast(final String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+    
+    /**
+     * Gửi broadcast tới MainActivity để cập nhật UI dựa trên thời gian của thiết bị
+     * @param deviceId ID của thiết bị cần cập nhật
+     * @param durationMinutes Thời gian (phút) hoạt động của thiết bị
+     */
+    private void sendDeviceStatusBroadcast(String deviceId, int durationMinutes) {
+        Log.d("SocketService", "Sending device status broadcast: " + deviceId + ", duration: " + durationMinutes);
+        
+        // Hủy timer cũ nếu có
+        if (deviceTimers.containsKey(deviceId)) {
+            CountDownTimer oldTimer = deviceTimers.get(deviceId);
+            if (oldTimer != null) {
+                oldTimer.cancel();
+            }
+        }
+        
+        // Gửi broadcast để bật thiết bị
+        Intent intent = new Intent(DEVICE_STATUS_ACTION);
+        intent.putExtra("deviceId", deviceId);
+        intent.putExtra("isOn", true);
+        intent.putExtra("durationMinutes", durationMinutes);
+        sendBroadcast(intent);
+        
+        // Tạo một timer để tự động tắt thiết bị sau khi hết thời gian
+        CountDownTimer timer = new CountDownTimer(durationMinutes * 60 * 1000, 60000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // Có thể gửi broadcast cập nhật thời gian còn lại
+                int minutesRemaining = (int) (millisUntilFinished / 60000);
+                Intent updateIntent = new Intent(DEVICE_STATUS_ACTION);
+                updateIntent.putExtra("deviceId", deviceId);
+                updateIntent.putExtra("isOn", true);
+                updateIntent.putExtra("minutesRemaining", minutesRemaining);
+                sendBroadcast(updateIntent);
+            }
+
+            @Override
+            public void onFinish() {
+                // Gửi broadcast tắt thiết bị khi hết thời gian
+                Intent finishIntent = new Intent(DEVICE_STATUS_ACTION);
+                finishIntent.putExtra("deviceId", deviceId);
+                finishIntent.putExtra("isOn", false);
+                sendBroadcast(finishIntent);
+                
+                // Xóa timer khỏi map
+                deviceTimers.remove(deviceId);
+            }
+        };
+        
+        // Lưu timer vào map
+        deviceTimers.put(deviceId, timer);
+        
+        // Bắt đầu timer
+        timer.start();
     }
     public void onOff(int isOnOff, String deviceId) {
         if (mSocket != null && mSocket.connected()) {

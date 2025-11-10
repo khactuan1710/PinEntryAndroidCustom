@@ -6,6 +6,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.os.Build;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -69,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private  String selectedUrl = "";
 
     private SmsBroadcastReceiver smsBroadcastReceiver;
+    private DeviceStatusReceiver deviceStatusReceiver;
 
     AppCompatTextView tvFullName;
     RecyclerView recyclerView;
@@ -430,6 +434,11 @@ public class MainActivity extends AppCompatActivity {
 
         IntentFilter filter = new IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION);
         registerReceiver(smsBroadcastReceiver, filter);
+        
+        // Đăng ký BroadcastReceiver cho cập nhật trạng thái thiết bị
+        deviceStatusReceiver = new DeviceStatusReceiver();
+        IntentFilter deviceStatusFilter = new IntentFilter(SocketService.DEVICE_STATUS_ACTION);
+        registerReceiver(deviceStatusReceiver, deviceStatusFilter);
     }
 
     @Override
@@ -437,6 +446,9 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         if (smsBroadcastReceiver != null) {
             unregisterReceiver(smsBroadcastReceiver);
+        }
+        if (deviceStatusReceiver != null) {
+            unregisterReceiver(deviceStatusReceiver);
         }
     }
 
@@ -483,4 +495,74 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    }
 
+    /**
+     * BroadcastReceiver để nhận thông tin cập nhật trạng thái thiết bị từ SocketService
+     */
+    private class DeviceStatusReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() != null && intent.getAction().equals(SocketService.DEVICE_STATUS_ACTION)) {
+                String deviceId = intent.getStringExtra("deviceId");
+                boolean isOn = intent.getBooleanExtra("isOn", false);
+                int durationMinutes = intent.getIntExtra("durationMinutes", 0);
+                int minutesRemaining = intent.getIntExtra("minutesRemaining", 0);
+                
+                Log.d("MainActivity", "Received device update: DeviceId=" + deviceId + 
+                        ", isOn=" + isOn + ", duration=" + durationMinutes + 
+                        ", remaining=" + minutesRemaining);
+                
+                // Tìm thiết bị trong danh sách và cập nhật trạng thái
+                if (deviceId != null && !deviceId.isEmpty()) {
+                    // Kiểm tra xem các thiết bị có trong danh sách không
+                    if (deviceList != null) {
+                        Log.d("MainActivity", "Total devices in list: " + deviceList.size());
+                        // Thử cả hai cách để tìm thiết bị
+                        boolean found = false;
+                        for (DeviceResponse.Device device : deviceList) {
+                            // In ra ID của thiết bị theo nhiều cách khác nhau
+                            Log.d("MainActivity", "Device ID comparison - API: " + deviceId +
+                                   ", List deviceID: " + device.getDeviceID() +
+                                   ", List deviceId: " + device.getDeviceId());
+
+                            // Thử cả hai cách
+                            if (device.getDeviceId().equals(deviceId) ||
+                                device.getDeviceID().equals(deviceId)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        Log.d("MainActivity", "Device found in list: " + found);
+                        if (found) {
+                            updateDeviceStatus(deviceId, isOn);
+                        } else {
+                            Log.w("MainActivity", "⚠️ Device not found in list, skip update: " + deviceId);
+                        }
+                    }
+                } else {
+                    Log.e("MainActivity", "Received null or empty deviceId");
+                }
+            }
+        }
+    }
+    
+    /**
+     * Cập nhật trạng thái của thiết bị trong danh sách
+     * @param deviceId ID của thiết bị cần cập nhật
+     * @param isOn Trạng thái bật/tắt mới
+     */
+    private void updateDeviceStatus(String deviceId, boolean isOn) {
+        if (deviceList != null && deviceAdapter != null) {
+            for (int i = 0; i < deviceList.size(); i++) {
+                DeviceResponse.Device device = deviceList.get(i);
+                if (device.getDeviceId().equals(deviceId)) {
+                    // Cập nhật trạng thái trong model
+                    device.setCurrentStatus(isOn ? "on" : "off");
+                    
+                    // Thông báo adapter để cập nhật UI
+                    deviceAdapter.notifyItemChanged(i);
+                    break;
+                }
+            }
+        }
+    }
 }

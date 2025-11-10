@@ -12,6 +12,7 @@ import com.example.myapplication.model.RegisterRequest;
 import com.example.myapplication.model.SimpleResult;
 import com.example.myapplication.model.TransactionRequest;
 import com.example.myapplication.model.TransactionResponse;
+import com.example.myapplication.model.TransactionResponse2;
 import com.example.myapplication.model.UpdateDeviceRequest;
 import com.example.myapplication.model.UpdateUserRequest;
 import com.example.myapplication.model.UserResponse;
@@ -37,7 +38,7 @@ public interface ApiService {
 
 
     @POST("/transaction")
-    Call<TransactionResponse> createTransaction(
+    Call<TransactionResponse2> createTransaction(
             @Header("Authorization") String token,
             @Body TransactionRequest request);
 
