@@ -483,8 +483,8 @@ public class SocketService extends Service {
         Matcher matcher = pattern.matcher(message);
 
 
-        String regex2 = "([A-Za-z0-9]{4})\\s([A-Za-z0-9]{4})\\s([A-Za-z0-9]{10})";
-        Pattern pattern2 = Pattern.compile(regex2);
+        String regex2 = "(DHMG)\\s([A-Za-z0-9]{4})\\s([A-Za-z0-9]{10})";
+        Pattern pattern2 = Pattern.compile(regex2, Pattern.CASE_INSENSITIVE);
         Matcher matcher2 = pattern2.matcher(message);
 
         // Kiểm tra và lấy kết quả
