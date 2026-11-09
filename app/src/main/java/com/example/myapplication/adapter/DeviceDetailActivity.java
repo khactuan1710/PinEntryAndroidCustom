@@ -193,7 +193,9 @@ public class DeviceDetailActivity extends AppCompatActivity {
 
 
         String deviceName = device.getDeviceName();
-        String url = "https://maygiat.online/?maMayGiat=" + deviceName;  // Chuỗi URL với tên máy giặt
+        // URL lấy từ server (GET /config) chứ không fix cứng, để đổi địa chỉ hệ thống
+        // không phải build lại app.
+        String url = SharedPreferencesUtil.getQrBaseUrl(this) + "/?maMayGiat=" + deviceName;
 
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         try {

@@ -11,7 +11,10 @@ public class RetrofitClient {
     private static Retrofit retrofit;
 //    public static String BASE_URL = "http://10.0.2.2:5001";
 
-    public static String BASE_URL = "https://maygiat.online";
+    // Địa chỉ gốc của server. Dùng hostname Render thay vì tên miền phải gia hạn hằng
+    // năm: hostname này gắn với service nên không chết theo tên miền. URL in lên QR thì
+    // KHÔNG lấy ở đây mà hỏi server qua GET /config (xem SharedPreferencesUtil.getQrBaseUrl).
+    public static String BASE_URL = "https://iot-maygiat-x5s3.onrender.com";
 
     public static Retrofit getInstance() {
         if (retrofit == null) {

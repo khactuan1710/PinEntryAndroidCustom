@@ -14,8 +14,15 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.api.ApiService;
+import com.example.myapplication.api.RetrofitClient;
+import com.example.myapplication.model.ConfigResponse;
 import com.example.myapplication.model.LoginResponse;
 import com.example.myapplication.util.SharedPreferencesUtil;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -30,6 +37,8 @@ public class SplashActivity extends AppCompatActivity {
             return insets;
         });
 
+
+        fetchPublicConfig();
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             // Kiểm tra token trong SharedPreferences
@@ -51,5 +60,30 @@ public class SplashActivity extends AppCompatActivity {
             startActivity(intent);
             finish(); // Đóng màn Splash
         }, 1000);
+    }
+
+    /**
+     * Hỏi server xem QR phải in theo URL nào, rồi lưu lại để các màn sinh QR dùng.
+     * Chạy nền và cố tình KHÔNG chặn luồng vào app: thất bại thì vẫn dùng giá trị cũ
+     * đã lưu, hoặc địa chỉ server mặc định.
+     */
+    private void fetchPublicConfig() {
+        ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+        apiService.getConfig().enqueue(new Callback<ConfigResponse>() {
+            @Override
+            public void onResponse(Call<ConfigResponse> call, Response<ConfigResponse> response) {
+                ConfigResponse body = response.body();
+                if (response.isSuccessful() && body != null && body.isSuccess()
+                        && body.getData() != null) {
+                    SharedPreferencesUtil.saveQrBaseUrl(
+                            getApplicationContext(), body.getData().getQrBaseUrl());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ConfigResponse> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 }

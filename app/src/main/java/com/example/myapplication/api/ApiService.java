@@ -3,6 +3,7 @@ package com.example.myapplication.api;
 import com.example.myapplication.model.ApiResponse;
 import com.example.myapplication.model.BankCodeResponse;
 import com.example.myapplication.model.ChangePasswordRequest;
+import com.example.myapplication.model.ConfigResponse;
 import com.example.myapplication.model.CreateDeviceRequest;
 import com.example.myapplication.model.DeviceRequest;
 import com.example.myapplication.model.DeviceResponse;
@@ -29,6 +30,10 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
+
+    /** Cấu hình công khai (URL dùng để in QR). Không cần token. */
+    @GET("/config")
+    Call<ConfigResponse> getConfig();
 
     @POST("/turndevices")
     Call<ApiResponse> toggleDevice(

@@ -3,6 +3,7 @@ package com.example.myapplication.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import com.google.gson.Gson;
+import com.example.myapplication.api.RetrofitClient;
 import com.example.myapplication.model.LoginResponse;
 
 public class SharedPreferencesUtil {
@@ -36,6 +37,24 @@ public class SharedPreferencesUtil {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(USER_DATA_KEY);
         editor.apply();
+    }
+
+    private static final String QR_BASE_URL_KEY = "QR_BASE_URL";
+
+    /** Lưu URL dùng để in QR, lấy từ GET /config. */
+    public static void saveQrBaseUrl(Context context, String baseUrl) {
+        if (baseUrl == null || baseUrl.trim().isEmpty()) return;
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putString(QR_BASE_URL_KEY, baseUrl.trim()).apply();
+    }
+
+    /**
+     * URL để in QR. Dự phòng bằng địa chỉ server khi chưa kịp gọi /config lần nào
+     * (lần chạy đầu, hoặc đang mất mạng) — cả hai vốn trỏ về cùng một hệ thống.
+     */
+    public static String getQrBaseUrl(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(QR_BASE_URL_KEY, RetrofitClient.BASE_URL);
     }
 
     private static final String DEFAULT_MINUTES_KEY = "DEFAULT_MINUTES";

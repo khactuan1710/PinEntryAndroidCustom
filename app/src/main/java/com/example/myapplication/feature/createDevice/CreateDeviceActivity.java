@@ -385,7 +385,9 @@ public class CreateDeviceActivity extends AppCompatActivity {
     }
 
     private void initQR() {
-        String url = "https://maygiat.online/?maMayGiat=" + edtDeviceName.getText();  // Chuỗi URL với tên máy giặt
+        // URL lấy từ server (GET /config) chứ không fix cứng, để đổi địa chỉ hệ thống
+        // không phải build lại app.
+        String url = SharedPreferencesUtil.getQrBaseUrl(this) + "/?maMayGiat=" + edtDeviceName.getText();
 
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         try {
